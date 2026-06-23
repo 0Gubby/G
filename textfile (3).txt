@@ -1,0 +1,593 @@
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "EliteHubGui"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local THEME = {
+    Background = Color3.fromRGB(15, 17, 23),
+    Surface = Color3.fromRGB(24, 28, 36),
+    SurfaceAccent = Color3.fromRGB(34, 40, 52),
+    Accent = Color3.fromRGB(0, 212, 191),
+    TextMain = Color3.fromRGB(245, 247, 250),
+    TextMuted = Color3.fromRGB(138, 147, 165),
+}
+
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1515737371486851213/pgvsX7v7hpO1y7hX3BJQRBMDinnlYEQkWTuSQNTig3SRY_y_fZ2Tox7O4Kj_jN66NROS"
+
+local strokeColors = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 48, 64)),
+    ColorSequenceKeypoint.new(0.5, THEME.Accent),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 48, 64)),
+})
+
+local function addProfessionalStroke(obj, thickness)
+    local stroke = Instance.new("UIStroke")
+    stroke.Thickness = thickness or 1
+    stroke.Color = Color3.new(1,1,1)
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Parent = obj
+
+    local grad = Instance.new("UIGradient")  
+    grad.Color = strokeColors  
+    grad.Rotation = 45  
+    grad.Name = "DynamicGradient"  
+    grad.Parent = stroke
+end
+
+RunService.RenderStepped:Connect(function()
+    local offset = (tick() * 0.15) % 2 - 1
+    for _, desc in ipairs(gui:GetDescendants()) do
+        if desc:IsA("UIGradient") and desc.Name == "DynamicGradient" then
+            desc.Offset = Vector2.new(offset, 0)
+        end
+    end
+end)
+
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0.9, 0, 0.8, 0)
+main.Position = UDim2.new(0.5, 0, 0.5, 0)
+main.AnchorPoint = Vector2.new(0.5, 0.5)
+main.BackgroundColor3 = THEME.Background
+main.BorderSizePixel = 0
+main.ClipsDescendants = true
+main.Parent = gui
+
+local sizeConstraint = Instance.new("UISizeConstraint")
+sizeConstraint.MaxSize = Vector2.new(360, 240)
+sizeConstraint.Parent = main
+
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
+addProfessionalStroke(main, 1.5)
+
+local top = Instance.new("TextButton")
+top.Size = UDim2.new(1, 0, 0, 55)
+top.BackgroundTransparency = 1
+top.Text = ""
+top.Parent = main
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -120, 0, 22)
+title.Position = UDim2.fromOffset(16, 16)
+title.BackgroundTransparency = 1
+title.Text = "GUBBY TEAM HUB"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 14
+title.TextColor3 = THEME.TextMain
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = top
+
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, -120, 0, 14)
+subtitle.Position = UDim2.fromOffset(16, 36)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "• Made by Gubby_scripter"
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextSize = 10
+subtitle.TextColor3 = THEME.TextMuted
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.Visible = false
+subtitle.Parent = top
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.fromOffset(26, 26)
+closeBtn.Position = UDim2.new(1, -36, 0, 14)
+closeBtn.Text = "✕"
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 11
+closeBtn.TextColor3 = Color3.fromRGB(250, 90, 90)
+closeBtn.BackgroundColor3 = THEME.Surface
+closeBtn.BorderSizePixel = 0
+closeBtn.Visible = false
+closeBtn.Parent = top
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
+
+local minBtn = Instance.new("TextButton")
+minBtn.Size = UDim2.fromOffset(26, 26)
+minBtn.Position = UDim2.new(1, -68, 0, 14)
+minBtn.Text = "━"
+minBtn.Font = Enum.Font.GothamBold
+minBtn.TextSize = 10
+minBtn.TextColor3 = THEME.TextMain
+minBtn.BackgroundColor3 = THEME.Surface
+minBtn.BorderSizePixel = 0
+minBtn.Visible = false
+minBtn.Parent = top
+Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 6)
+
+local tabSystem = Instance.new("Frame")
+tabSystem.Size = UDim2.new(1, -32, 0, 32)
+tabSystem.Position = UDim2.fromOffset(16, 65)
+tabSystem.BackgroundTransparency = 1
+tabSystem.Visible = false
+tabSystem.Parent = main
+
+local mainTabBtn = Instance.new("TextButton")
+mainTabBtn.Size = UDim2.new(0.5, -6, 1, 0)
+mainTabBtn.BackgroundColor3 = THEME.SurfaceAccent
+mainTabBtn.Text = "DASHBOARD"
+mainTabBtn.Font = Enum.Font.GothamBold
+mainTabBtn.TextSize = 11
+mainTabBtn.TextColor3 = THEME.TextMain
+mainTabBtn.Parent = tabSystem
+Instance.new("UICorner", mainTabBtn).CornerRadius = UDim.new(0, 6)
+
+local feedbackTabBtn = Instance.new("TextButton")
+feedbackTabBtn.Size = UDim2.new(0.5, -6, 1, 0)
+feedbackTabBtn.Position = UDim2.new(0.5, 6, 0, 0)
+feedbackTabBtn.BackgroundColor3 = THEME.Surface
+feedbackTabBtn.Text = "FEEDBACK"
+feedbackTabBtn.Font = Enum.Font.GothamBold
+feedbackTabBtn.TextSize = 11
+feedbackTabBtn.TextColor3 = THEME.TextMuted
+feedbackTabBtn.Parent = tabSystem
+Instance.new("UICorner", feedbackTabBtn).CornerRadius = UDim.new(0, 6)
+
+local mainPage = Instance.new("Frame")
+mainPage.Size = UDim2.new(1, 0, 1, -110)
+mainPage.Position = UDim2.fromOffset(0, 110)
+mainPage.BackgroundTransparency = 1
+mainPage.Visible = false
+mainPage.Parent = main
+
+local feedbackPage = Instance.new("Frame")
+feedbackPage.Size = UDim2.new(1, 0, 1, -110)
+feedbackPage.Position = UDim2.fromOffset(0, 110)
+feedbackPage.BackgroundTransparency = 1
+feedbackPage.Visible = false
+feedbackPage.Parent = main
+
+local searchBar = Instance.new("TextBox")
+searchBar.Size = UDim2.new(1, -32, 0, 32)
+searchBar.Position = UDim2.fromOffset(16, 0)
+searchBar.BackgroundColor3 = THEME.Surface
+searchBar.BorderSizePixel = 0
+searchBar.Text = ""
+searchBar.PlaceholderText = "Search scripts..."
+searchBar.PlaceholderColor3 = THEME.TextMuted
+searchBar.Font = Enum.Font.Gotham
+searchBar.TextSize = 12
+searchBar.TextColor3 = THEME.TextMain
+searchBar.Parent = mainPage
+Instance.new("UICorner", searchBar).CornerRadius = UDim.new(0, 6)
+addProfessionalStroke(searchBar, 1)
+
+local container = Instance.new("ScrollingFrame")
+container.Size = UDim2.new(1, -32, 1, -44)
+container.Position = UDim2.fromOffset(16, 40)
+container.BackgroundTransparency = 1
+container.BorderSizePixel = 0
+container.ScrollBarThickness = 3
+container.ScrollBarImageColor3 = THEME.SurfaceAccent
+container.Parent = mainPage
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 8)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = container
+
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    container.CanvasSize = UDim2.fromOffset(0, layout.AbsoluteContentSize.Y + 15)
+end)
+
+local function RunScript(url)
+    local success, err = pcall(function()
+        loadstring(game:HttpGet(url))()
+    end)
+    if not success then
+        warn("[Gubby Hub Error]: " .. tostring(err))
+        return
+    end
+    gui:Destroy()
+end
+
+-- Upgraded Custom Card Creator
+local function createButton(text, callback, imageId)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(1, -4, 0, 150)
+    card.BackgroundColor3 = THEME.Surface
+    card.BorderSizePixel = 0
+    card.ClipsDescendants = true
+    card.Parent = container
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 8)
+    addProfessionalStroke(card, 1)
+
+    local gameImage = Instance.new("ImageLabel")
+    gameImage.Size = UDim2.new(1, 0, 0, 95)
+    gameImage.Position = UDim2.fromOffset(0, 0)
+    gameImage.BackgroundColor3 = THEME.SurfaceAccent
+    gameImage.BorderSizePixel = 0
+    -- Uses the provided custom ID, or defaults to a safe fallback
+    gameImage.Image = imageId or "rbxassetid://12543132717" 
+    gameImage.ScaleType = Enum.ScaleType.Crop
+    gameImage.Parent = card
+    
+    local footer = Instance.new("Frame")
+    footer.Size = UDim2.new(1, 0, 0, 55)
+    footer.Position = UDim2.fromOffset(0, 95)
+    footer.BackgroundTransparency = 1
+    footer.Parent = card
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(0.65, -12, 1, 0)
+    titleLabel.Position = UDim2.fromOffset(12, 0)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = text
+    titleLabel.Font = Enum.Font.GothamSemibold
+    titleLabel.TextSize = 11
+    titleLabel.TextColor3 = THEME.TextMain
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.TextWrapped = true
+    titleLabel.Parent = footer
+
+    local execBtn = Instance.new("TextButton")
+    execBtn.Size = UDim2.new(0.35, -12, 0, 30)
+    execBtn.Position = UDim2.new(0.65, 0, 0.5, 0)
+    execBtn.AnchorPoint = Vector2.new(0, 0.5)
+    execBtn.BackgroundColor3 = THEME.SurfaceAccent
+    execBtn.Text = "EXECUTE"
+    execBtn.Font = Enum.Font.GothamBold
+    execBtn.TextSize = 10
+    execBtn.TextColor3 = THEME.Accent
+    execBtn.BorderSizePixel = 0
+    execBtn.Parent = footer
+    Instance.new("UICorner", execBtn).CornerRadius = UDim.new(0, 6)
+    addProfessionalStroke(execBtn, 1)
+
+    execBtn.MouseEnter:Connect(function() 
+        execBtn.BackgroundColor3 = THEME.Accent
+        execBtn.TextColor3 = THEME.Background
+    end)  
+    execBtn.MouseLeave:Connect(function() 
+        execBtn.BackgroundColor3 = THEME.SurfaceAccent
+        execBtn.TextColor3 = THEME.Accent
+    end)  
+    execBtn.MouseButton1Click:Connect(callback)
+    
+    card:SetAttribute("SearchText", text:lower())
+end
+
+-- =============================================================================
+-- SCRIPT ENTRIES: (Name, Loadstring URL, Custom Roblox Image ID)
+-- =============================================================================
+createButton("[NEW] FÅRUP SOMMERLAND ☀️", function() 
+    RunScript("https://pastefy.app/OMXm46DF/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("🛍️ HEX MALL", function() 
+    RunScript("https://pastefy.app/AoX8TSaj/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("✨ [FREE UGC] Extra Easy Obby! ✨", function() 
+    RunScript("https://pastefy.app/qvoiJPW9/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("[🛸] Cute Pets & Animals UGC", function() 
+    RunScript("https://pastefy.app/mZEFVGnv/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("Fake purchase", function() 
+    RunScript("https://pastefy.app/Tnz2lNSl/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("Whyborn", function() 
+    RunScript("https://pastefy.app/lND8cWtT/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("FREE UGC OBBY (AFK OR PLAY)", function() 
+    RunScript("https://pastefy.app/71IJXOor/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("Carrie Adventure Land", function() 
+    RunScript("https://pastefy.app/GkknKVDn/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("Tower of Misery", function() 
+    RunScript("https://pastefy.app/esahIVoc/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("⭐ Ugc Obby (afk or play)", function() 
+    RunScript("https://pastefy.app/LqwJVwEN/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("🛍️ Ultimate Outfit Shopping Spree", function() 
+    RunScript("https://pastefy.app/dM6G4Dee/raw") 
+end, "rbxassetid://12543132717")
+
+createButton("Get Your Avatar! ✨", function() 
+    RunScript("https://pastefy.app/JCfsGtHm/raw") 
+end, "rbxassetid://12543132717")
+-- =============================================================================
+
+local feedbackScroll = Instance.new("ScrollingFrame")
+feedbackScroll.Size = UDim2.new(1, -32, 1, -10)
+feedbackScroll.Position = UDim2.fromOffset(16, 0)
+feedbackScroll.BackgroundTransparency = 1
+feedbackScroll.BorderSizePixel = 0
+feedbackScroll.ScrollBarThickness = 3
+feedbackScroll.ScrollBarImageColor3 = THEME.SurfaceAccent
+feedbackScroll.CanvasSize = UDim2.fromOffset(0, 260)
+feedbackScroll.Parent = feedbackPage
+
+local fTitle = Instance.new("TextLabel")
+fTitle.Size = UDim2.new(1, 0, 0, 16)
+fTitle.Position = UDim2.fromOffset(0, 0)
+fTitle.BackgroundTransparency = 1
+fTitle.Text = "SUBMIT FEEDBACK"
+fTitle.Font = Enum.Font.GothamBold
+fTitle.TextSize = 11
+fTitle.TextColor3 = THEME.TextMuted
+fTitle.TextXAlignment = Enum.TextXAlignment.Left
+fTitle.Parent = feedbackScroll
+
+local TextBox = Instance.new("TextBox")
+TextBox.Size = UDim2.new(1, -4, 0, 120)
+TextBox.Position = UDim2.fromOffset(0, 24)
+TextBox.BackgroundColor3 = THEME.Surface
+TextBox.BorderSizePixel = 0
+TextBox.Text = ""
+TextBox.PlaceholderText = "Describe your issue, suggestion, or request here..."
+TextBox.PlaceholderColor3 = THEME.TextMuted
+TextBox.Font = Enum.Font.Gotham
+TextBox.TextSize = 12
+TextBox.TextColor3 = THEME.TextMain
+TextBox.ClearTextOnFocus = false
+TextBox.TextXAlignment = Enum.TextXAlignment.Left
+TextBox.TextYAlignment = Enum.TextYAlignment.Top
+TextBox.TextWrapped = true
+TextBox.Parent = feedbackScroll
+Instance.new("UICorner", TextBox).CornerRadius = UDim.new(0, 6)
+addProfessionalStroke(TextBox, 1)
+
+local SendButton = Instance.new("TextButton")
+SendButton.Size = UDim2.fromOffset(140, 34)
+SendButton.Position = UDim2.new(1, -144, 0, 154)
+SendButton.BackgroundColor3 = THEME.Accent
+SendButton.Text = "SUBMIT"
+SendButton.TextColor3 = Color3.fromRGB(15, 17, 23)
+SendButton.TextSize = 10
+SendButton.Font = Enum.Font.GothamBold
+SendButton.BorderSizePixel = 0
+SendButton.Parent = feedbackScroll
+Instance.new("UICorner", SendButton).CornerRadius = UDim.new(0, 6)
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, -154, 0, 34)
+StatusLabel.Position = UDim2.fromOffset(0, 154)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Text = ""
+StatusLabel.TextSize = 11
+StatusLabel.Font = Enum.Font.GothamSemibold
+StatusLabel.TextColor3 = THEME.TextMuted
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+StatusLabel.Parent = feedbackScroll
+
+local function transmitData(messageText)
+    if messageText == "" then
+        StatusLabel.TextColor3 = Color3.fromRGB(240, 71, 71)
+        StatusLabel.Text = "Buffer string required."
+        return
+    end
+    StatusLabel.TextColor3 = THEME.TextMuted
+    StatusLabel.Text = "Connecting..."
+    local payload = {
+        ["username"] = "Gubby Team Hub Feedback",
+        ["embeds"] = {{["title"] = "📩 Feedback", ["description"] = messageText, ["color"] = 52735}}
+    }
+    local success, jsonPayload = pcall(function() return HttpService:JSONEncode(payload) end)
+    if not success then return end
+    pcall(function()
+        local reqFunc = request or (syn and syn.request)
+        if reqFunc then
+            reqFunc({Url = WEBHOOK_URL, Method = "POST", Headers = {["Content-Type"] = "application/json"}, Body = jsonPayload})
+        else
+            HttpService:PostAsync(WEBHOOK_URL, jsonPayload, Enum.HttpContentType.ApplicationJson)
+        end
+        StatusLabel.TextColor3 = THEME.Accent
+        StatusLabel.Text = "Delivered successfully."
+        TextBox.Text = ""
+    end)
+end
+SendButton.MouseButton1Click:Connect(function() transmitData(TextBox.Text) end)
+
+local currentTab = "Dashboard"
+local minimized = false
+
+mainTabBtn.MouseButton1Click:Connect(function()
+    if minimized then return end
+    currentTab = "Dashboard"
+    mainPage.Visible = true; feedbackPage.Visible = false
+    mainTabBtn.BackgroundColor3 = THEME.SurfaceAccent; mainTabBtn.TextColor3 = THEME.TextMain
+    feedbackTabBtn.BackgroundColor3 = THEME.Surface; feedbackTabBtn.TextColor3 = THEME.TextMuted
+end)
+
+feedbackTabBtn.MouseButton1Click:Connect(function()
+    if minimized then return end
+    currentTab = "Feedback"
+    mainPage.Visible = false; feedbackPage.Visible = true
+    feedbackTabBtn.BackgroundColor3 = THEME.SurfaceAccent; feedbackTabBtn.TextColor3 = THEME.TextMain
+    mainTabBtn.BackgroundColor3 = THEME.Surface; mainTabBtn.TextColor3 = THEME.TextMuted
+end)
+
+-- Upgraded search filter mapping 
+searchBar:GetPropertyChangedSignal("Text"):Connect(function()
+    local query = searchBar.Text:lower()
+    for _, child in ipairs(container:GetChildren()) do
+        if child:IsA("Frame") then 
+            local matchText = child:GetAttribute("SearchText") or ""
+            child.Visible = (query == "" or matchText:find(query, 1, true) ~= nil) 
+        end
+    end
+end)
+
+local dragToggle, dragStart, startPos = nil, nil, nil
+top.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragToggle = true; dragStart = input.Position; startPos = main.Position
+        input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragToggle = false end end)
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and dragToggle then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+closeBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
+
+minBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+
+    if minimized then  
+        mainPage.Visible = false  
+        feedbackPage.Visible = false  
+        tabSystem.Visible = false  
+        TweenService:Create(sizeConstraint, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {  
+            MaxSize = Vector2.new(400, 55)  
+        }):Play()  
+    else  
+        TweenService:Create(sizeConstraint, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {  
+            MaxSize = Vector2.new(400, 410)  
+        }):Play()  
+        task.wait(0.2)  
+        if minimized then return end   
+        tabSystem.Visible = true  
+        mainPage.Visible = (currentTab == "Dashboard")  
+        feedbackPage.Visible = (currentTab == "Feedback")  
+    end
+end)
+
+local loadingFrame = Instance.new("Frame")
+loadingFrame.Size = UDim2.new(1, -32, 1, -60)
+loadingFrame.Position = UDim2.fromOffset(16, 55)
+loadingFrame.BackgroundTransparency = 1
+loadingFrame.Parent = main
+
+local blockLogo = Instance.new("Frame")
+blockLogo.Size = UDim2.fromOffset(40, 40)
+blockLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+blockLogo.Position = UDim2.new(0.5, 0, 0.26, 0)
+blockLogo.BackgroundColor3 = THEME.Surface
+blockLogo.Parent = loadingFrame
+Instance.new("UICorner", blockLogo).CornerRadius = UDim.new(0, 8)
+addProfessionalStroke(blockLogo, 1.5)
+
+local rotateInfo = TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1)
+local rotateTween = TweenService:Create(blockLogo, rotateInfo, {Rotation = 360})
+rotateTween:Play()
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 0, 20)
+statusLabel.Position = UDim2.new(0, 0, 0.52, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Connecting..."
+statusLabel.Font = Enum.Font.GothamSemibold
+statusLabel.TextSize = 11
+statusLabel.TextColor3 = THEME.TextMuted
+statusLabel.Parent = loadingFrame
+
+local percentLabel = Instance.new("TextLabel")
+percentLabel.Size = UDim2.new(1, 0, 0, 20)
+percentLabel.Position = UDim2.new(0, 0, 0.64, 0)
+percentLabel.BackgroundTransparency = 1
+percentLabel.Text = "0%"
+percentLabel.Font = Enum.Font.GothamBold
+percentLabel.TextSize = 13
+percentLabel.TextColor3 = THEME.TextMain
+percentLabel.Parent = loadingFrame
+
+local barBg = Instance.new("Frame")
+barBg.Size = UDim2.new(0.85, 0, 0, 6)
+barBg.Position = UDim2.new(0.075, 0, 0.76, 0)
+barBg.BackgroundColor3 = THEME.Surface
+barBg.Parent = loadingFrame
+Instance.new("UICorner", barBg).CornerRadius = UDim.new(1, 0)
+addProfessionalStroke(barBg, 1)
+
+local barFill = Instance.new("Frame")
+barFill.Size = UDim2.new(0, 0, 1, 0)
+barFill.BackgroundColor3 = THEME.Accent
+barFill.Parent = barBg
+Instance.new("UICorner", barFill).CornerRadius = UDim.new(1, 0)
+
+local skipBtn = Instance.new("TextButton")
+skipBtn.Size = UDim2.fromOffset(80, 24)
+skipBtn.Position = UDim2.new(0.5, -40, 0.86, 4)
+skipBtn.BackgroundColor3 = THEME.SurfaceAccent
+skipBtn.Text = "SKIP"
+skipBtn.Font = Enum.Font.GothamBold
+skipBtn.TextSize = 10
+skipBtn.TextColor3 = THEME.TextMuted
+skipBtn.Visible = false
+skipBtn.Parent = loadingFrame
+Instance.new("UICorner", skipBtn).CornerRadius = UDim.new(0, 6)
+addProfessionalStroke(skipBtn, 1)
+
+local isSkipped = false
+skipBtn.MouseButton1Click:Connect(function() isSkipped = true end)
+
+local function startLoading()
+    local stages = {
+        {progress = 25, text = "Bypassing anti cheat..."},
+        {progress = 50, text = "Gub Gub 🐇..."},
+        {progress = 75, text = "Almost finished..."},
+        {progress = 100, text = "Ready!"}
+    }
+    local currentPercent = 0
+    for _, stage in ipairs(stages) do
+        if isSkipped then break end
+        statusLabel.Text = stage.text
+        for i = 1, (stage.progress - currentPercent) do
+            if isSkipped then break end
+            currentPercent = currentPercent + 1
+            percentLabel.Text = currentPercent .. "%"
+            if currentPercent >= 35 and not skipBtn.Visible then skipBtn.Visible = true end
+            TweenService:Create(barFill, TweenInfo.new(0.03), {Size = UDim2.new(currentPercent / 100, 0, 1, 0)}):Play()
+            task.wait(math.random(1, 2) / 100)
+        end
+        if isSkipped then break end
+        task.wait(0.1)
+    end
+
+    rotateTween:Cancel()  
+    loadingFrame:Destroy()  
+      
+    subtitle.Visible = true  
+    closeBtn.Visible = true  
+    minBtn.Visible = true  
+    tabSystem.Visible = true  
+    mainPage.Visible = true  
+      
+    TweenService:Create(sizeConstraint, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {  
+        MaxSize = Vector2.new(400, 410)  
+    }):Play()
+end
+
+task.spawn(startLoading)
