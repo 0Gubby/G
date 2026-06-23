@@ -278,7 +278,7 @@ end
 -- =============================================================================
 createButton("[NEW] FÅRUP SOMMERLAND ☀️", function() 
     RunScript("https://pastefy.app/OMXm46DF/raw") 
-end, "rbxassetid://12543132717")
+end, "rbxassetid://74732779401913")
 
 createButton("🛍️ HEX MALL", function() 
     RunScript("https://pastefy.app/AoX8TSaj/raw") 
