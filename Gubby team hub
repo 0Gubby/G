@@ -277,7 +277,7 @@ end
 -- SCRIPT ENTRIES WITH IMAGE ASSETS (ONE TAB = ONE SCRIPT)
 -- ==========================================
 createScriptTab("Fårup Sommerland", "https://pastefy.app/oyr9IO6j/raw", 100084571809362)
-createScriptTab("Hex Mall", "https://pastefy.app/zWMuL9zp/raw", nil)
+createScriptTab("Hex Mall", "https://pastefy.app/zWMuL9zp/raw", 131807993575629)
 createScriptTab("Extra Easy Obby", "https://pastefy.app/qvoiJPW9/raw", nil)
 createScriptTab("Cute Pets UGC", "https://pastefy.app/mZEFVGnv/raw", nil)
 createScriptTab("Fake Purchase", "https://pastefy.app/Tnz2lNSl/raw", nil)
@@ -287,7 +287,7 @@ createScriptTab("Carrie Adventure", "https://pastefy.app/GkknKVDn/raw", nil)
 createScriptTab("Tower of Misery", "https://pastefy.app/esahIVoc/raw", nil)
 createScriptTab("Ugc Obby AFK", "https://pastefy.app/LqwJVwEN/raw", nil)
 createScriptTab("Shopping Spree", "https://pastefy.app/dM6G4Dee/raw", nil)
-createScriptTab("Get Your Avatar", "https://pastefy.app/JCfsGtHm/raw", nil)
+createScriptTab("Get Your Avatar", "https://pastefy.app/JCfsGtHm/raw", 93100091331318)
 
 -- Dynamic sidebar canvas adjustments
 sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
