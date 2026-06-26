@@ -276,7 +276,7 @@ end
 -- ==========================================
 -- SCRIPT ENTRIES WITH IMAGE ASSETS (ONE TAB = ONE SCRIPT)
 -- ==========================================
-createScriptTab("Fårup Sommerland", "https://pastefy.app/vgbQ9Qoo/raw", 91717092983007)
+createScriptTab("Fårup Sommerland", "https://pastefy.app/vgbQ9Qoo/raw", 100084571809362)
 createScriptTab("Hex Mall", "https://pastefy.app/zWMuL9zp/raw", nil)
 createScriptTab("Extra Easy Obby", "https://pastefy.app/qvoiJPW9/raw", nil)
 createScriptTab("Cute Pets UGC", "https://pastefy.app/mZEFVGnv/raw", nil)
