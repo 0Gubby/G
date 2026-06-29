@@ -289,7 +289,7 @@ createScriptTab("Ugc Obby AFK", "https://pastefy.app/LqwJVwEN/raw", nil)
 createScriptTab("Shopping Spree", "https://pastefy.app/dM6G4Dee/raw", nil)
 createScriptTab("Get Your Avatar", "https://pastefy.app/JCfsGtHm/raw", 93100091331318)
 createScriptTab("Slimes Battles (FREE UGC)", "https://pastefy.app/gpt20BQb/raw", 116236811476343)
-createScriptTab("[FREE UGC]🍌AVL:The Show 2 script", "https://pastefy.app/10HvokCA/raw", 138979827505199)
+createScriptTab("[FREE UGC]🍌AVL:The Show 2", "https://pastefy.app/10HvokCA/raw", 138979827505199)
 -- Dynamic sidebar canvas adjustments
 sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     sidebarFrame.CanvasSize = UDim2.fromOffset(0, sidebarLayout.AbsoluteContentSize.Y + 5)
