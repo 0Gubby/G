@@ -30,21 +30,112 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     ScreenGui.ResetOnSpawn = false
     ScreenGui.Parent = ParentFolder
 
+    -- =========================================================================
+    -- CINEMATIC LOADING SCREEN
+    -- =========================================================================
+    local LoadingBg = Instance.new("Frame")
+    LoadingBg.Name = "LoadingScreen"
+    LoadingBg.Size = UDim2.fromScale(1, 1)
+    LoadingBg.BackgroundColor3 = Color3.fromRGB(8, 6, 12)
+    LoadingBg.BackgroundTransparency = 0.2
+    LoadingBg.ZIndex = 100
+    LoadingBg.Parent = ScreenGui
+
+    local Blur = Instance.new("BlurEffect")
+    Blur.Size = 0
+    Blur.Parent = game:GetService("Lighting")
+    TweenService:Create(Blur, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {Size = 16}):Play()
+
+    local LoadContainer = Instance.new("Frame")
+    LoadContainer.Size = UDim2.fromOffset(300, 150)
+    LoadContainer.Position = UDim2.fromScale(0.5, 0.5)
+    LoadContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+    LoadContainer.BackgroundTransparency = 1
+    LoadContainer.ZIndex = 101
+    LoadContainer.Parent = LoadingBg
+
+    local LoadAvatar = Instance.new("ImageLabel")
+    LoadAvatar.Size = UDim2.fromOffset(50, 50)
+    LoadAvatar.Position = UDim2.new(0.5, -25, 0, 10)
+    LoadAvatar.BackgroundColor3 = Color3.fromRGB(20, 15, 30)
+    LoadAvatar.BackgroundTransparency = 1
+    LoadAvatar.ImageTransparency = 1
+    LoadAvatar.ZIndex = 102
+    LoadAvatar.Parent = LoadContainer
+
+    local LoadAvatarCorner = Instance.new("UICorner")
+    LoadAvatarCorner.CornerRadius = UDim.new(1, 0)
+    LoadAvatarCorner.Parent = LoadAvatar
+
+    local WelcomeLabel = Instance.new("TextLabel")
+    WelcomeLabel.Size = UDim2.new(1, 0, 0, 24)
+    WelcomeLabel.Position = UDim2.fromOffset(0, 70)
+    WelcomeLabel.BackgroundTransparency = 1
+    WelcomeLabel.Text = "Welcome,"
+    WelcomeLabel.Font = Enum.Font.GothamMedium
+    WelcomeLabel.TextSize = 14
+    WelcomeLabel.TextColor3 = Color3.fromRGB(150, 140, 175)
+    WelcomeLabel.TextTransparency = 1
+    WelcomeLabel.ZIndex = 102
+    WelcomeLabel.Parent = LoadContainer
+
+    local UserLabel = Instance.new("TextLabel")
+    UserLabel.Size = UDim2.new(1, 0, 0, 24)
+    UserLabel.Position = UDim2.fromOffset(0, 92)
+    UserLabel.BackgroundTransparency = 1
+    UserLabel.Text = Player.DisplayName
+    UserLabel.Font = Enum.Font.GothamBlack
+    UserLabel.TextSize = 18
+    UserLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    UserLabel.TextTransparency = 1
+    UserLabel.ZIndex = 102
+    UserLabel.Parent = LoadContainer
+
+    task.spawn(function()
+        local success, content = pcall(function()
+            return Players:GetUserThumbnailAsync(Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+        end)
+        if success then LoadAvatar.Image = content end
+        
+        -- Fade In Intro Sequence
+        TweenService:Create(LoadAvatar, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {ImageTransparency = 0}):Play()
+        TweenService:Create(WelcomeLabel, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {TextTransparency = 0}):Play()
+        task.wait(0.1)
+        TweenService:Create(UserLabel, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {TextTransparency = 0}):Play()
+        
+        task.wait(1.8) -- Splashtime hold duration
+        
+        -- Outro Dismissal Sequence
+        TweenService:Create(LoadAvatar, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {ImageTransparency = 1}):Play()
+        TweenService:Create(WelcomeLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {TextTransparency = 1}):Play()
+        TweenService:Create(UserLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {TextTransparency = 1}):Play()
+        TweenService:Create(Blur, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {Size = 0}):Play()
+        local bgTween = TweenService:Create(LoadingBg, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {BackgroundTransparency = 1})
+        bgTween:Play()
+        bgTween.Completed:Connect(function()
+            LoadingBg:Destroy()
+            Blur:Destroy()
+        end)
+    end)
+
+    -- =========================================================================
+    -- MAIN WINDOW (LARGE CONFIGURATION)
+    -- =========================================================================
     local Main = Instance.new("Frame")
     Main.Name = "Main"
-    Main.Size = UDim2.fromOffset(420, 130) 
-    Main.Position = UDim2.new(0.5, -210, 0.5, -65)
+    Main.Size = UDim2.fromOffset(460, 120) 
+    Main.Position = UDim2.new(0.5, -230, 0.5, -60)
     Main.BackgroundColor3 = Color3.fromRGB(10, 8, 16)
     Main.BorderSizePixel = 0
     Main.Parent = ScreenGui
 
     local MainCorner = Instance.new("UICorner")
-    MainCorner.CornerRadius = UDim.new(0, 14)
+    MainCorner.CornerRadius = UDim.new(0, 12)
     MainCorner.Parent = Main
 
     local MainBgGradient = Instance.new("UIGradient")
     MainBgGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(24, 18, 38)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(22, 16, 35)),
         ColorSequenceKeypoint.new(0.5, Color3.fromRGB(12, 10, 18)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(6, 5, 10))
     })
@@ -52,16 +143,16 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     MainBgGradient.Parent = Main
 
     local MainStroke = Instance.new("UIStroke")
-    MainStroke.Thickness = 1.5
+    MainStroke.Thickness = 1.2
     MainStroke.Color = Color3.fromRGB(255, 255, 255)
     MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     MainStroke.Parent = Main
 
     local MainStrokeGradient = Instance.new("UIGradient")
     MainStrokeGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 180, 255)),
-        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(90, 75, 120)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 25, 40))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 160, 255)),
+        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(80, 65, 110)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 20, 35))
     })
     MainStrokeGradient.Rotation = 45
     MainStrokeGradient.Parent = MainStroke
@@ -71,12 +162,12 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     AmbientGlow.Size = UDim2.new(1, 10, 1, 10)
     AmbientGlow.Position = UDim2.fromOffset(-5, -5)
     AmbientGlow.BackgroundColor3 = Color3.fromRGB(115, 60, 255)
-    AmbientGlow.BackgroundTransparency = 0.88
+    AmbientGlow.BackgroundTransparency = 0.9
     AmbientGlow.ZIndex = Main.ZIndex - 1
     AmbientGlow.Parent = Main
 
     local GlowCorner = Instance.new("UICorner")
-    GlowCorner.CornerRadius = UDim.new(0, 16)
+    GlowCorner.CornerRadius = UDim.new(0, 14)
     GlowCorner.Parent = AmbientGlow
 
     local Title = Instance.new("TextLabel")
@@ -130,32 +221,35 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     MinStrokeGradient.Parent = MinimizeStroke
 
     local Content = Instance.new("Frame")
-    Content.Size = UDim2.new(1, -36, 1, -130)
+    Content.Size = UDim2.new(1, -36, 1, -120)
     Content.Position = UDim2.fromOffset(18, 62)
     Content.BackgroundTransparency = 1
     Content.Parent = Main
 
+    -- =========================================================================
+    -- MINIATURIZED PROFILE CORNER FOOTER
+    -- =========================================================================
     local ProfileFrame = Instance.new("Frame")
     ProfileFrame.Name = "ProfileFrame"
-    ProfileFrame.Size = UDim2.new(1, -36, 0, 46)
-    ProfileFrame.Position = UDim2.new(0, 18, 1, -60)
+    ProfileFrame.Size = UDim2.new(1, -36, 0, 38)
+    ProfileFrame.Position = UDim2.new(0, 18, 1, -50)
     ProfileFrame.BackgroundColor3 = Color3.fromRGB(14, 11, 22)
     ProfileFrame.BorderSizePixel = 0
     ProfileFrame.Parent = Main
 
     local ProfileCorner = Instance.new("UICorner")
-    ProfileCorner.CornerRadius = UDim.new(0, 8)
+    ProfileCorner.CornerRadius = UDim.new(0, 6)
     ProfileCorner.Parent = ProfileFrame
 
     local ProfileStroke = Instance.new("UIStroke")
     ProfileStroke.Thickness = 1
-    ProfileStroke.Color = Color3.fromRGB(45, 36, 65)
+    ProfileStroke.Color = Color3.fromRGB(40, 32, 55)
     ProfileStroke.Parent = ProfileFrame
 
     local AvatarImage = Instance.new("ImageLabel")
     AvatarImage.Name = "AvatarImage"
-    AvatarImage.Size = UDim2.fromOffset(32, 32)
-    AvatarImage.Position = UDim2.new(0, 8, 0.5, -16)
+    AvatarImage.Size = UDim2.fromOffset(24, 24)
+    AvatarImage.Position = UDim2.new(0, 8, 0.5, -12)
     AvatarImage.BackgroundColor3 = Color3.fromRGB(24, 18, 36)
     AvatarImage.BorderSizePixel = 0
     AvatarImage.Parent = ProfileFrame
@@ -165,48 +259,43 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     AvatarCorner.Parent = AvatarImage
 
     task.spawn(function()
-        local userId = Player.UserId
-        local thumbType = Enum.ThumbnailType.HeadShot
-        local thumbSize = Enum.ThumbnailSize.Size420x420
-        local success, content, isReady = pcall(function()
-            return Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+        local success, content = pcall(function()
+            return Players:GetUserThumbnailAsync(Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
         end)
-        if success then
-            AvatarImage.Image = content
-        end
+        if success then AvatarImage.Image = content end
     end)
 
     local DisplayNameLabel = Instance.new("TextLabel")
-    DisplayNameLabel.Size = UDim2.new(1, -60, 0, 16)
-    DisplayNameLabel.Position = UDim2.fromOffset(48, 7)
+    DisplayNameLabel.Size = UDim2.new(1, -60, 0, 14)
+    DisplayNameLabel.Position = UDim2.fromOffset(40, 4)
     DisplayNameLabel.BackgroundTransparency = 1
     DisplayNameLabel.Text = Player.DisplayName
     DisplayNameLabel.Font = Enum.Font.GothamBold
-    DisplayNameLabel.TextSize = 12
-    DisplayNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    DisplayNameLabel.TextSize = 11
+    DisplayNameLabel.TextColor3 = Color3.fromRGB(230, 225, 245)
     DisplayNameLabel.TextXAlignment = Enum.TextXAlignment.Left
     DisplayNameLabel.Parent = ProfileFrame
 
     local UsernameLabel = Instance.new("TextLabel")
-    UsernameLabel.Size = UDim2.new(1, -60, 0, 14)
-    UsernameLabel.Position = UDim2.fromOffset(48, 23)
+    UsernameLabel.Size = UDim2.new(1, -60, 0, 12)
+    UsernameLabel.Position = UDim2.fromOffset(40, 18)
     UsernameLabel.BackgroundTransparency = 1
     UsernameLabel.Text = "@" .. Player.Name
     UsernameLabel.Font = Enum.Font.GothamMedium
-    UsernameLabel.TextSize = 10
-    UsernameLabel.TextColor3 = Color3.fromRGB(130, 120, 155)
+    UsernameLabel.TextSize = 9
+    UsernameLabel.TextColor3 = Color3.fromRGB(115, 105, 135)
     UsernameLabel.TextXAlignment = Enum.TextXAlignment.Left
     UsernameLabel.Parent = ProfileFrame
 
     local Window = {
         ElementCount = 0,
-        MaxHeight = 130
+        MaxHeight = 120
     }
 
     local function UpdateSize()
-        Window.MaxHeight = 130 + (Window.ElementCount * 54)
+        Window.MaxHeight = 120 + (Window.ElementCount * 54)
         if not Minimized then
-            Main.Size = UDim2.fromOffset(420, Window.MaxHeight)
+            Main.Size = UDim2.fromOffset(460, Window.MaxHeight)
         end
     end
 
@@ -388,65 +477,4 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         Label.ZIndex = 3  
         Label.Parent = ButtonFrame  
 
-        ButtonFrame.MouseButton1Click:Connect(function()  
-            TweenService:Create(ButtonFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad), {Size = UDim2.new(1, -6, 0, 42), Position = UDim2.fromOffset(3, YPos + 2)}):Play()  
-            task.wait(0.05)  
-            TweenService:Create(ButtonFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad), {Size = UDim2.new(1, 0, 0, 46), Position = UDim2.fromOffset(0, YPos)}):Play()  
-
-            SheenBar.Position = UDim2.new(-2, 0, 0, 0)
-            local flashTween = TweenService:Create(SheenBar, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.new(1, 0, 0, 0)})
-            flashTween:Play()
-
-            if Callback then
-                pcall(Callback)
-            end
-        end)  
-    end
-
-    local dragging = false
-    local dragInput, dragStart, startPos
-
-    Main.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = Main.Position
-
-            input.Changed:Connect(function()  
-                if input.UserInputState == Enum.UserInputState.End then  
-                    dragging = false  
-                end  
-            end)  
-        end
-    end)
-
-    Main.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-
-    UIS.InputChanged:Connect(function(input)
-        if dragging and input == dragInput then
-            local delta = input.Position - dragStart
-            Main.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-
-    local Minimized = false
-    Minimize.MouseButton1Click:Connect(function()
-        Minimized = not Minimized
-        Content.Visible = not Minimized
-        ProfileFrame.Visible = not Minimized
-        Main.Size = Minimized and UDim2.fromOffset(420, 54) or UDim2.fromOffset(420, Window.MaxHeight)
-    end)
-
-    return Window
-end
-
-return Library
+        ButtonFrame.Mo
