@@ -12,7 +12,7 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     local isSpecialUser = (Player.Name == "Tester_ugcAccount")
     local displayName = isSpecialUser and "Gubby_scripter" or Player.DisplayName
 
-    -- Safe Execution Folder Selection (Prevents detection & support all executors)
+    -- Universal Executor Environment Handling (Safe parenting chain)
     local ParentFolder
     if gethui then
         ParentFolder = gethui()
@@ -24,7 +24,7 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         ParentFolder = success and core or Player:WaitForChild("PlayerGui")
     end
 
-    -- Clean old instances to prevent stacking lag on re-execution
+    -- Prevent layout stacking on re-execution
     pcall(function()
         if ParentFolder:FindFirstChild("UniversalGui") then
             ParentFolder.UniversalGui:Destroy()
@@ -35,25 +35,24 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     ScreenGui.Name = "UniversalGui"
     ScreenGui.ResetOnSpawn = false
     
-    -- Protect GUI from basic discovery tools if executor supports it
     if syn and syn.protect_gui then
         pcall(syn.protect_gui, ScreenGui)
     end
     ScreenGui.Parent = ParentFolder
 
-    -- Track active background threads to close down properly on destruction
+    -- Thread lifecycle switch
     local uiActive = true
     ScreenGui.Destroying:Connect(function()
         uiActive = false
     end)
 
     -- =========================================================================
-    -- MAIN WINDOW FRAME (PERFECT DISCORD-STYLE FOR PC & MOBILE)
+    -- MAIN CONTAINER
     -- =========================================================================
     local Main = Instance.new("Frame")
     Main.Name = "Main"
-    Main.Size = UDim2.fromOffset(330, 175)
-    Main.Position = UDim2.new(0.5, -165, 0.45, -87)
+    Main.Size = UDim2.fromOffset(330, 185)
+    Main.Position = UDim2.new(0.5, -165, 0.45, -92)
     Main.BackgroundColor3 = Color3.fromRGB(11, 9, 17)
     Main.BorderSizePixel = 0
     Main.ClipsDescendants = true
@@ -88,32 +87,33 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     MainStrokeGradient.Parent = MainStroke
 
     -- =========================================================================
-    -- TOP PROFILE HEADER ZONE
+    -- EXPLICIT SYSTEM DESIGNED WELCOME/PROFILE HEADER ZONE
     -- =========================================================================
     local ProfileZone = Instance.new("Frame")
     ProfileZone.Name = "ProfileZone"
-    ProfileZone.Size = UDim2.new(1, 0, 0, 125)
+    ProfileZone.Size = UDim2.new(1, 0, 0, 130)
     ProfileZone.BackgroundTransparency = 1
     ProfileZone.ZIndex = 5
     ProfileZone.Parent = Main
 
     local WelcomeLabel = Instance.new("TextLabel")
     WelcomeLabel.Size = UDim2.new(1, 0, 0, 14)
-    WelcomeLabel.Position = UDim2.fromOffset(0, 14)
+    WelcomeLabel.Position = UDim2.fromOffset(0, 16)
     WelcomeLabel.BackgroundTransparency = 1
     WelcomeLabel.Text = "Welcome,"
     WelcomeLabel.Font = Enum.Font.GothamMedium
-    WelcomeLabel.TextSize = 11
-    WelcomeLabel.TextColor3 = Color3.fromRGB(155, 145, 175)
+    WelcomeLabel.TextSize = 12
+    WelcomeLabel.TextColor3 = Color3.fromRGB(165, 155, 185)
     WelcomeLabel.TextAlignment = Enum.TextAlignment.Center
     WelcomeLabel.ZIndex = 6
     WelcomeLabel.Parent = ProfileZone
 
     local AvatarImage = Instance.new("ImageLabel")
     AvatarImage.Name = "AvatarImage"
-    AvatarImage.Size = UDim2.fromOffset(48, 48)
-    AvatarImage.Position = UDim2.new(0.5, -24, 0, 36)
-    AvatarImage.BackgroundColor3 = Color3.fromRGB(22, 16, 32)
+    AvatarImage.Size = UDim2.fromOffset(52, 52)
+    AvatarImage.Position = UDim2.new(0.5, -26, 0, 38)
+    AvatarImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    AvatarImage.BackgroundTransparency = 0.95
     AvatarImage.BorderSizePixel = 0
     AvatarImage.ZIndex = 6
     AvatarImage.Parent = ProfileZone
@@ -124,34 +124,34 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
 
     local AvatarStroke = Instance.new("UIStroke")
     AvatarStroke.Thickness = 1.5
-    AvatarStroke.Color = Color3.fromRGB(120, 90, 180)
+    AvatarStroke.Color = Color3.fromRGB(135, 100, 200)
     AvatarStroke.Parent = AvatarImage
 
-    -- Safe thumbnail puller with standard placeholder fallback
+    -- Pull avatar thumbnail safely
     task.spawn(function()
         local success, content = pcall(function()
             return Players:GetUserThumbnailAsync(Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
         end)
-        if success and uiActive then 
+        if success and uiActive and content then 
             AvatarImage.Image = content 
         else
-            AvatarImage.Image = "rbxassetid://0" -- Fallback if avatar API fails
+            AvatarImage.Image = "rbxassetid://12032050513" -- Universal fall-back avatar icon asset
         end
     end)
 
     local UserLabel = Instance.new("TextLabel")
     UserLabel.Size = UDim2.new(1, 0, 0, 16)
-    UserLabel.Position = UDim2.fromOffset(0, 94)
+    UserLabel.Position = UDim2.fromOffset(0, 98)
     UserLabel.BackgroundTransparency = 1
     UserLabel.Text = displayName
     UserLabel.Font = Enum.Font.GothamBlack
-    UserLabel.TextSize = 13
+    UserLabel.TextSize = 14
     UserLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     UserLabel.TextAlignment = Enum.TextAlignment.Center
     UserLabel.ZIndex = 6
     UserLabel.Parent = ProfileZone
 
-    -- Rainbow Script Logic with garbage collection verification
+    -- Special Account Rainbow Loop Logic
     if isSpecialUser then
         task.spawn(function()
             while uiActive do
@@ -166,31 +166,36 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
 
     local SeparatorLine = Instance.new("Frame")
     SeparatorLine.Size = UDim2.new(1, -28, 0, 1)
-    SeparatorLine.Position = UDim2.fromOffset(14, 124)
+    SeparatorLine.Position = UDim2.fromOffset(14, 134)
     SeparatorLine.BackgroundColor3 = Color3.fromRGB(38, 30, 55)
     SeparatorLine.BorderSizePixel = 0
     SeparatorLine.ZIndex = 5
     SeparatorLine.Parent = Main
 
-    -- Content Container Block
+    -- =========================================================================
+    -- THE ELEMENT CONTENT PACK FRAME
+    -- =========================================================================
     local Content = Instance.new("Frame")
     Content.Name = "ContentContainer"
-    Content.Size = UDim2.new(1, -28, 1, -135)
-    Content.Position = UDim2.fromOffset(14, 135)
+    Content.Size = UDim2.new(1, -28, 1, -145)
+    Content.Position = UDim2.fromOffset(14, 145)
     Content.BackgroundTransparency = 1
     Content.ZIndex = 4
     Content.Parent = Main
 
     local Window = {
         ElementCount = 0,
-        MaxHeight = 175
+        MaxHeight = 185
     }
 
     local function UpdateSize()
-        Window.MaxHeight = 175 + (Window.ElementCount * 44)
+        Window.MaxHeight = 185 + (Window.ElementCount * 44)
         Main.Size = UDim2.fromOffset(330, Window.MaxHeight)
     end
 
+    -- =========================================================================
+    -- TOGGLE BUILD METHOD
+    -- =========================================================================
     function Window:CreateToggle(Name, Callback)
         local YPos = Window.ElementCount * 44
         Window.ElementCount = Window.ElementCount + 1
@@ -279,6 +284,10 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
             end
         end)  
     end
+
+    -- =========================================================================
+    -- BUTTON BUILD METHOD
+    -- =========================================================================
     function Window:CreateButton(Name, Callback)
         local YPos = Window.ElementCount * 44
         Window.ElementCount = Window.ElementCount + 1
@@ -354,7 +363,9 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         end)  
     end
 
-    -- Smooth Multi-Platform Dragging System (Works natively across touch & PC engines)
+    -- =========================================================================
+    -- NATIVE INPUT DRAG SYSTEM (Cross-platform support)
+    -- =========================================================================
     local dragging = false
     local dragInput, dragStart, startPos
 
