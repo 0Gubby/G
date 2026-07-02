@@ -402,7 +402,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
             end
         end)  
     end
-
     function Window:CreateButton(Name, Callback)
         local YPos = Window.ElementCount * 54
         Window.ElementCount = Window.ElementCount + 1
@@ -477,4 +476,65 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         Label.ZIndex = 3  
         Label.Parent = ButtonFrame  
 
-        ButtonFrame.Mo
+        ButtonFrame.MouseButton1Click:Connect(function()  
+            TweenService:Create(ButtonFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad), {Size = UDim2.new(1, -6, 0, 42), Position = UDim2.fromOffset(3, YPos + 2)}):Play()  
+            task.wait(0.05)  
+            TweenService:Create(ButtonFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad), {Size = UDim2.new(1, 0, 0, 46), Position = UDim2.fromOffset(0, YPos)}):Play()  
+
+            SheenBar.Position = UDim2.new(-2, 0, 0, 0)
+            local flashTween = TweenService:Create(SheenBar, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.new(1, 0, 0, 0)})
+            flashTween:Play()
+
+            if Callback then
+                pcall(Callback)
+            end
+        end)  
+    end
+
+    local dragging = false
+    local dragInput, dragStart, startPos
+
+    Main.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = Main.Position
+
+            input.Changed:Connect(function()  
+                if input.UserInputState == Enum.UserInputState.End then  
+                    dragging = false  
+                end  
+            end)  
+        end
+    end)
+
+    Main.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if dragging and input == dragInput then
+            local delta = input.Position - dragStart
+            Main.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    local Minimized = false
+    Minimize.MouseButton1Click:Connect(function()
+        Minimized = not Minimized
+        Content.Visible = not Minimized
+        ProfileFrame.Visible = not Minimized
+        Main.Size = Minimized and UDim2.fromOffset(460, 54) or UDim2.fromOffset(460, Window.MaxHeight)
+    end)
+
+    return Window
+end
+
+return Library
