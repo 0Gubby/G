@@ -32,15 +32,20 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     ScreenGui.Parent = ParentFolder
 
     -- =========================================================================
-    -- MAIN WINDOW
+    -- MAIN WINDOW (MOBILE RESPONSIVE & DRAGGABLE)
     -- =========================================================================
     local Main = Instance.new("Frame")
     Main.Name = "Main"
-    Main.Size = UDim2.fromOffset(460, 120) 
-    Main.Position = UDim2.new(0.5, -230, 0.5, -60)
+    Main.Size = UDim2.new(0.9, 0, 0, 120) 
+    Main.Position = UDim2.new(0.5, 0, 0.5, 0)
+    Main.AnchorPoint = Vector2.new(0.5, 0.5)
     Main.BackgroundColor3 = Color3.fromRGB(10, 8, 16)
     Main.BorderSizePixel = 0
     Main.Parent = ScreenGui
+
+    local MainSizeConstraint = Instance.new("UISizeConstraint")
+    MainSizeConstraint.MaxSize = Vector2.new(460, 2000)
+    MainSizeConstraint.Parent = Main
 
     local MainCorner = Instance.new("UICorner")
     MainCorner.CornerRadius = UDim.new(0, 12)
@@ -83,6 +88,13 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     GlowCorner.CornerRadius = UDim.new(0, 14)
     GlowCorner.Parent = AmbientGlow
 
+    local HeaderHitbox = Instance.new("TextButton")
+    HeaderHitbox.Name = "HeaderHitbox"
+    HeaderHitbox.Size = UDim2.new(1, 0, 0, 60)
+    HeaderHitbox.BackgroundTransparency = 1
+    HeaderHitbox.Text = ""
+    HeaderHitbox.Parent = Main
+
     local Title = Instance.new("TextLabel")
     Title.Size = UDim2.new(1, -80, 0, 22)
     Title.Position = UDim2.fromOffset(18, 16)
@@ -114,6 +126,7 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     Minimize.Font = Enum.Font.GothamBold
     Minimize.TextSize = 16
     Minimize.BorderSizePixel = 0
+    Minimize.ZIndex = 5
     Minimize.Parent = Main
 
     local MinCorner = Instance.new("UICorner")
@@ -137,6 +150,7 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     Content.Size = UDim2.new(1, -36, 1, -120)
     Content.Position = UDim2.fromOffset(18, 62)
     Content.BackgroundTransparency = 1
+    Content.ClipsDescendants = true
     Content.Parent = Main
 
     -- =========================================================================
@@ -178,7 +192,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         if success then AvatarImage.Image = content end
     end)
 
-    -- Changed labels to TextButtons to handle the toggle safely
     local DisplayNameLabel = Instance.new("TextButton")
     DisplayNameLabel.Size = UDim2.new(1, -60, 0, 14)
     DisplayNameLabel.Position = UDim2.fromOffset(40, 4)
@@ -201,7 +214,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     UsernameLabel.TextXAlignment = Enum.TextXAlignment.Left
     UsernameLabel.Parent = ProfileFrame
 
-    -- Identity Protection logic
     local IdentityHidden = false
     local function ToggleIdentityProtection()
         IdentityHidden = not IdentityHidden
@@ -218,7 +230,42 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     UsernameLabel.MouseButton1Click:Connect(ToggleIdentityProtection)
 
     -- =========================================================================
-    -- WINDOW METRICS & FUNCTIONALITY
+    -- DRAGGING MECHANIC (MOUSE + TOUCH RESPONSIVE)
+    -- =========================================================================
+    local dragging, dragInput, dragStart, startPos
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    HeaderHitbox.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = Main.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    HeaderHitbox.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
+        -- =========================================================================
+    -- WINDOW METRICS & MINIMIZE SYSTEM
     -- =========================================================================
     local Window = {
         ElementCount = 0,
@@ -228,9 +275,28 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     local function UpdateSize()
         Window.MaxHeight = 120 + (Window.ElementCount * 54)
         if not Minimized then
-            Main.Size = UDim2.fromOffset(460, Window.MaxHeight)
+            TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(Main.Size.X.Scale, 0, 0, Window.MaxHeight)}):Play()
         end
     end
+
+    TableInsert = table.insert -- Micro-optimization
+
+    Minimize.MouseButton1Click:Connect(function()
+        Minimized = not Minimized
+        if Minimized then
+            -- Compress window down to show only header frame
+            TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(Main.Size.X.Scale, 0, 0, 60)}):Play()
+            Content.Visible = false
+            ProfileFrame.Visible = false
+            Minimize.Text = "◦"
+        else
+            -- Restore true programmatic height smoothly
+            Content.Visible = true
+            ProfileFrame.Visible = true
+            TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(Main.Size.X.Scale, 0, 0, Window.MaxHeight)}):Play()
+            Minimize.Text = "•"
+        end
+    end)
 
     function Window:CreateToggle(Name, Callback)
         local YPos = Window.ElementCount * 54
@@ -387,9 +453,9 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         local ClickSheenGradient = Instance.new("UIGradient")  
         ClickSheenGradient.Color = ColorSequence.new({  
             ColorSequenceKeypoint.new(0, Color3.fromRGB(44, 30, 66)),
-            ClickSheenGradient.ColorSequenceKeypoint.new(0.4, Color3.fromRGB(210, 170, 255)),
-            ClickSheenGradient.ColorSequenceKeypoint.new(0.6, Color3.fromRGB(210, 170, 255)),
-            ClickSheenGradient.ColorSequenceKeypoint.new(1, Color3.fromRGB(22, 14, 34))
+            ColorSequenceKeypoint.new(0.4, Color3.fromRGB(210, 170, 255)),
+            ColorSequenceKeypoint.new(0.6, Color3.fromRGB(210, 170, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(22, 14, 34))
         })  
         ClickSheenGradient.Transparency = NumberSequence.new({  
             NumberSequenceKeypoint.new(0, 1),  
