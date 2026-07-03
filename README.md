@@ -32,11 +32,11 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     ScreenGui.Parent = ParentFolder
 
     -- =========================================================================
-    -- MAIN WINDOW (MOBILE RESPONSIVE & DRAGGABLE)
+    -- SLIM MAIN WINDOW (OPTIMIZED FOR MOBILE)
     -- =========================================================================
     local Main = Instance.new("Frame")
     Main.Name = "Main"
-    Main.Size = UDim2.new(0.9, 0, 0, 120) 
+    Main.Size = UDim2.new(0.85, 0, 0, 85) -- Shrunk initial base height from 120 to 85
     Main.Position = UDim2.new(0.5, 0, 0.5, 0)
     Main.AnchorPoint = Vector2.new(0.5, 0.5)
     Main.BackgroundColor3 = Color3.fromRGB(10, 8, 16)
@@ -44,11 +44,11 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     Main.Parent = ScreenGui
 
     local MainSizeConstraint = Instance.new("UISizeConstraint")
-    MainSizeConstraint.MaxSize = Vector2.new(460, 2000)
+    MainSizeConstraint.MaxSize = Vector2.new(340, 2000) -- Capped max width at 340 (down from 460)
     MainSizeConstraint.Parent = Main
 
     local MainCorner = Instance.new("UICorner")
-    MainCorner.CornerRadius = UDim.new(0, 12)
+    MainCorner.CornerRadius = UDim.new(0, 10)
     MainCorner.Parent = Main
 
     local MainBgGradient = Instance.new("UIGradient")
@@ -61,122 +61,121 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     MainBgGradient.Parent = Main
 
     local MainStroke = Instance.new("UIStroke")
-    MainStroke.Thickness = 1.2
-    MainStroke.Color = Color3.fromRGB(255, 255, 255)
+    MainStroke.Thickness = 1
+    MainStroke.Color = Color3.fromRGB(55, 45, 75)
     MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     MainStroke.Parent = Main
 
-    local MainStrokeGradient = Instance.new("UIGradient")
-    MainStrokeGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 160, 255)),
-        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(80, 65, 110)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 20, 35))
-    })
-    MainStrokeGradient.Rotation = 45
-    MainStrokeGradient.Parent = MainStroke
-
-    local AmbientGlow = Instance.new("Frame")
-    AmbientGlow.Name = "AmbientGlow"
-    AmbientGlow.Size = UDim2.new(1, 10, 1, 10)
-    AmbientGlow.Position = UDim2.fromOffset(-5, -5)
-    AmbientGlow.BackgroundColor3 = Color3.fromRGB(115, 60, 255)
-    AmbientGlow.BackgroundTransparency = 0.9
-    AmbientGlow.ZIndex = Main.ZIndex - 1
-    AmbientGlow.Parent = Main
-
-    local GlowCorner = Instance.new("UICorner")
-    GlowCorner.CornerRadius = UDim.new(0, 14)
-    GlowCorner.Parent = AmbientGlow
-
+    -- Header Drag Area
     local HeaderHitbox = Instance.new("TextButton")
     HeaderHitbox.Name = "HeaderHitbox"
-    HeaderHitbox.Size = UDim2.new(1, 0, 0, 60)
+    HeaderHitbox.Size = UDim2.new(1, 0, 0, 45) -- Lowered header profile
     HeaderHitbox.BackgroundTransparency = 1
     HeaderHitbox.Text = ""
     HeaderHitbox.Parent = Main
 
     local Title = Instance.new("TextLabel")
-    Title.Size = UDim2.new(1, -80, 0, 22)
-    Title.Position = UDim2.fromOffset(18, 16)
+    Title.Size = UDim2.new(1, -95, 0, 18)
+    Title.Position = UDim2.fromOffset(14, 10)
     Title.BackgroundTransparency = 1
     Title.Text = HubTitle or "UNIVERSAL GUI"
-    Title.Font = Enum.Font.GothamBlack
-    Title.TextSize = 13
+    Title.Font = Enum.Font.GothamBold
+    Title.TextSize = 11 -- Shrunk text size
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.Parent = Main
 
     local Subtitle = Instance.new("TextLabel")
-    Subtitle.Size = UDim2.new(1, -80, 0, 14)
-    Subtitle.Position = UDim2.fromOffset(18, 35)
+    Subtitle.Size = UDim2.new(1, -95, 0, 12)
+    Subtitle.Position = UDim2.fromOffset(14, 26)
     Subtitle.BackgroundTransparency = 1
     Subtitle.Text = HubSubtitle or "Made by Unknown"
     Subtitle.Font = Enum.Font.GothamMedium
-    Subtitle.TextSize = 10
+    Subtitle.TextSize = 8.5
     Subtitle.TextColor3 = Color3.fromRGB(120, 110, 145)
     Subtitle.TextXAlignment = Enum.TextXAlignment.Left
     Subtitle.Parent = Main
 
+    -- Top Bar Window Controls Container
+    local Controls = Instance.new("Frame")
+    Controls.Name = "Controls"
+    Controls.Size = UDim2.fromOffset(50, 22)
+    Controls.Position = UDim2.new(1, -64, 0, 11)
+    Controls.BackgroundTransparency = 1
+    Controls.Parent = Main
+
+    local ControlsLayout = Instance.new("UIListLayout")
+    ControlsLayout.FillDirection = Enum.FillDirection.Horizontal
+    ControlsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    ControlsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    ControlsLayout.Padding = UDim.new(0, 6)
+    ControlsLayout.Parent = Controls
+
+    -- Minimize Button
     local Minimize = Instance.new("TextButton")
-    Minimize.Size = UDim2.fromOffset(26, 26)
-    Minimize.Position = UDim2.new(1, -44, 0, 14)
+    Minimize.Name = "Minimize"
+    Minimize.Size = UDim2.fromOffset(22, 22)
     Minimize.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
     Minimize.Text = "•"
-    Minimize.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Minimize.TextColor3 = Color3.fromRGB(200, 190, 220)
     Minimize.Font = Enum.Font.GothamBold
-    Minimize.TextSize = 16
+    Minimize.TextSize = 14
     Minimize.BorderSizePixel = 0
-    Minimize.ZIndex = 5
-    Minimize.Parent = Main
+    Minimize.LayoutOrder = 1
+    Minimize.Parent = Controls
 
     local MinCorner = Instance.new("UICorner")
-    MinCorner.CornerRadius = UDim.new(0, 8)
+    MinCorner.CornerRadius = UDim.new(0, 6)
     MinCorner.Parent = Minimize
 
-    local MinimizeStroke = Instance.new("UIStroke")
-    MinimizeStroke.Color = Color3.fromRGB(255, 255, 255)
-    MinimizeStroke.Thickness = 1
-    MinimizeStroke.Parent = Minimize
+    -- Close Button
+    local Close = Instance.new("TextButton")
+    Close.Name = "Close"
+    Close.Size = UDim2.fromOffset(22, 22)
+    Close.BackgroundColor3 = Color3.fromRGB(45, 20, 30)
+    Close.Text = "✕"
+    Close.TextColor3 = Color3.fromRGB(255, 100, 120)
+    Close.Font = Enum.Font.GothamBold
+    Close.TextSize = 10
+    Close.BorderSizePixel = 0
+    Close.LayoutOrder = 2
+    Close.Parent = Controls
 
-    local MinStrokeGradient = Instance.new("UIGradient")
-    MinStrokeGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 160, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 40, 70))
-    })
-    MinStrokeGradient.Rotation = 45
-    MinStrokeGradient.Parent = MinimizeStroke
+    local CloseCorner = Instance.new("UICorner")
+    CloseCorner.CornerRadius = UDim.new(0, 6)
+    CloseCorner.Parent = Close
 
     local Content = Instance.new("Frame")
-    Content.Size = UDim2.new(1, -36, 1, -120)
-    Content.Position = UDim2.fromOffset(18, 62)
+    Content.Size = UDim2.new(1, -24, 1, -85)
+    Content.Position = UDim2.fromOffset(12, 45)
     Content.BackgroundTransparency = 1
     Content.ClipsDescendants = true
     Content.Parent = Main
 
     -- =========================================================================
-    -- MINIATURIZED PROFILE CORNER FOOTER WITH ANONYMOUS TOGGLE
+    -- COMPACT PROFILE FOOTER WITH ANONYMOUS TOGGLE
     -- =========================================================================
     local ProfileFrame = Instance.new("Frame")
     ProfileFrame.Name = "ProfileFrame"
-    ProfileFrame.Size = UDim2.new(1, -36, 0, 38)
-    ProfileFrame.Position = UDim2.new(0, 18, 1, -50)
+    ProfileFrame.Size = UDim2.new(1, -24, 0, 32) -- Trimmed profile frame height
+    ProfileFrame.Position = UDim2.new(0, 12, 1, -40)
     ProfileFrame.BackgroundColor3 = Color3.fromRGB(14, 11, 22)
     ProfileFrame.BorderSizePixel = 0
     ProfileFrame.Parent = Main
 
     local ProfileCorner = Instance.new("UICorner")
-    ProfileCorner.CornerRadius = UDim.new(0, 6)
+    ProfileCorner.CornerRadius = UDim.new(0, 5)
     ProfileCorner.Parent = ProfileFrame
 
     local ProfileStroke = Instance.new("UIStroke")
     ProfileStroke.Thickness = 1
-    ProfileStroke.Color = Color3.fromRGB(40, 32, 55)
+    ProfileStroke.Color = Color3.fromRGB(35, 28, 48)
     ProfileStroke.Parent = ProfileFrame
 
     local AvatarImage = Instance.new("ImageLabel")
     AvatarImage.Name = "AvatarImage"
-    AvatarImage.Size = UDim2.fromOffset(24, 24)
-    AvatarImage.Position = UDim2.new(0, 8, 0.5, -12)
+    AvatarImage.Size = UDim2.fromOffset(20, 20)
+    AvatarImage.Position = UDim2.new(0, 6, 0.5, -10)
     AvatarImage.BackgroundColor3 = Color3.fromRGB(24, 18, 36)
     AvatarImage.BorderSizePixel = 0
     AvatarImage.Parent = ProfileFrame
@@ -193,23 +192,23 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     end)
 
     local DisplayNameLabel = Instance.new("TextButton")
-    DisplayNameLabel.Size = UDim2.new(1, -60, 0, 14)
-    DisplayNameLabel.Position = UDim2.fromOffset(40, 4)
+    DisplayNameLabel.Size = UDim2.new(1, -50, 0, 12)
+    DisplayNameLabel.Position = UDim2.fromOffset(32, 3)
     DisplayNameLabel.BackgroundTransparency = 1
     DisplayNameLabel.Text = Player.DisplayName
     DisplayNameLabel.Font = Enum.Font.GothamBold
-    DisplayNameLabel.TextSize = 11
+    DisplayNameLabel.TextSize = 9.5
     DisplayNameLabel.TextColor3 = Color3.fromRGB(230, 225, 245)
     DisplayNameLabel.TextXAlignment = Enum.TextXAlignment.Left
     DisplayNameLabel.Parent = ProfileFrame
 
     local UsernameLabel = Instance.new("TextButton")
-    UsernameLabel.Size = UDim2.new(1, -60, 0, 12)
-    UsernameLabel.Position = UDim2.fromOffset(40, 18)
+    UsernameLabel.Size = UDim2.new(1, -50, 0, 10)
+    UsernameLabel.Position = UDim2.fromOffset(32, 15)
     UsernameLabel.BackgroundTransparency = 1
     UsernameLabel.Text = "@" .. Player.Name
     UsernameLabel.Font = Enum.Font.GothamMedium
-    UsernameLabel.TextSize = 9
+    UsernameLabel.TextSize = 8
     UsernameLabel.TextColor3 = Color3.fromRGB(115, 105, 135)
     UsernameLabel.TextXAlignment = Enum.TextXAlignment.Left
     UsernameLabel.Parent = ProfileFrame
@@ -228,6 +227,11 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
 
     DisplayNameLabel.MouseButton1Click:Connect(ToggleIdentityProtection)
     UsernameLabel.MouseButton1Click:Connect(ToggleIdentityProtection)
+
+    -- Close Engine functionality
+    Close.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
 
     -- =========================================================================
     -- DRAGGING MECHANIC (MOUSE + TOUCH RESPONSIVE)
@@ -269,13 +273,13 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     -- =========================================================================
     local Window = {
         ElementCount = 0,
-        MaxHeight = 120
+        MaxHeight = 85
     }
 
     local function UpdateSize()
-        Window.MaxHeight = 120 + (Window.ElementCount * 54)
+        Window.MaxHeight = 85 + (Window.ElementCount * 36) -- Spaced beautifully for mobile touch targets
         if not Minimized then
-            TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(Main.Size.X.Scale, 0, 0, Window.MaxHeight)}):Play()
+            TweenService:Create(Main, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(Main.Size.X.Scale, 0, 0, Window.MaxHeight + 45)}):Play()
         end
     end
 
@@ -284,28 +288,26 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     Minimize.MouseButton1Click:Connect(function()
         Minimized = not Minimized
         if Minimized then
-            -- Compress window down to show only header frame
-            TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(Main.Size.X.Scale, 0, 0, 60)}):Play()
+            TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(Main.Size.X.Scale, 0, 0, 45)}):Play()
             Content.Visible = false
             ProfileFrame.Visible = false
             Minimize.Text = "◦"
         else
-            -- Restore true programmatic height smoothly
             Content.Visible = true
             ProfileFrame.Visible = true
-            TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(Main.Size.X.Scale, 0, 0, Window.MaxHeight)}):Play()
+            TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(Main.Size.X.Scale, 0, 0, Window.MaxHeight + 45)}):Play()
             Minimize.Text = "•"
         end
     end)
 
     function Window:CreateToggle(Name, Callback)
-        local YPos = Window.ElementCount * 54
+        local YPos = Window.ElementCount * 36
         Window.ElementCount = Window.ElementCount + 1
         UpdateSize()
 
         local ButtonFrame = Instance.new("TextButton")
         ButtonFrame.Name = "ToggleButton"
-        ButtonFrame.Size = UDim2.new(1, 0, 0, 46)
+        ButtonFrame.Size = UDim2.new(1, 0, 0, 30) -- Compact height
         ButtonFrame.Position = UDim2.fromOffset(0, YPos)
         ButtonFrame.BackgroundColor3 = Color3.fromRGB(16, 14, 24)
         ButtonFrame.BorderSizePixel = 0
@@ -313,46 +315,38 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         ButtonFrame.Parent = Content
 
         local btnCorner = Instance.new("UICorner")
-        btnCorner.CornerRadius = UDim.new(0, 8)
+        btnCorner.CornerRadius = UDim.new(0, 5)
         btnCorner.Parent = ButtonFrame
 
         local BaseGradient = Instance.new("UIGradient")  
         BaseGradient.Color = ColorSequence.new({  
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(32, 22, 48)),  
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 12, 24))  
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(28, 20, 42)),  
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(14, 10, 20))  
         })  
         BaseGradient.Rotation = 90  
         BaseGradient.Parent = ButtonFrame  
 
         local Stroke = Instance.new("UIStroke")  
-        Stroke.Color = Color3.fromRGB(255, 255, 255)
-        Stroke.Thickness = 1.2  
+        Stroke.Color = Color3.fromRGB(48, 38, 68)
+        Stroke.Thickness = 1
         Stroke.Parent = ButtonFrame  
 
-        local StrokeGradient = Instance.new("UIGradient")  
-        StrokeGradient.Color = ColorSequence.new({  
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(140, 100, 200)),  
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(45, 30, 65))  
-        })  
-        StrokeGradient.Rotation = 90  
-        StrokeGradient.Parent = Stroke  
-
         local Label = Instance.new("TextLabel")  
-        Label.Size = UDim2.new(1, -70, 1, 0)  
-        Label.Position = UDim2.fromOffset(14, 0)  
+        Label.Size = UDim2.new(1, -55, 1, 0)  
+        Label.Position = UDim2.fromOffset(10, 0)  
         Label.BackgroundTransparency = 1  
         Label.Text = Name
         Label.Font = Enum.Font.GothamBold  
-        Label.TextSize = 13  
-        Label.TextColor3 = Color3.fromRGB(230, 225, 245) 
+        Label.TextSize = 10.5
+        Label.TextColor3 = Color3.fromRGB(225, 220, 240) 
         Label.TextXAlignment = Enum.TextXAlignment.Left
         Label.Parent = ButtonFrame  
 
         local SwitchTrack = Instance.new("Frame")
         SwitchTrack.Name = "SwitchTrack"
-        SwitchTrack.Size = UDim2.fromOffset(42, 22)
-        SwitchTrack.Position = UDim2.new(1, -56, 0.5, -11)
-        SwitchTrack.BackgroundColor3 = Color3.fromRGB(40, 32, 55)
+        SwitchTrack.Size = UDim2.fromOffset(32, 16)
+        SwitchTrack.Position = UDim2.new(1, -42, 0.5, -8)
+        SwitchTrack.BackgroundColor3 = Color3.fromRGB(32, 25, 45)
         SwitchTrack.BorderSizePixel = 0
         SwitchTrack.Parent = ButtonFrame
 
@@ -360,16 +354,11 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         trackCorner.CornerRadius = UDim.new(1, 0)
         trackCorner.Parent = SwitchTrack
 
-        local TrackStroke = Instance.new("UIStroke")
-        TrackStroke.Thickness = 1
-        TrackStroke.Color = Color3.fromRGB(75, 60, 100)
-        TrackStroke.Parent = SwitchTrack
-
         local SwitchKnob = Instance.new("Frame")
         SwitchKnob.Name = "SwitchKnob"
-        SwitchKnob.Size = UDim2.fromOffset(16, 16)
-        SwitchKnob.Position = UDim2.fromOffset(3, 3)
-        SwitchKnob.BackgroundColor3 = Color3.fromRGB(180, 170, 195)
+        SwitchKnob.Size = UDim2.fromOffset(12, 12)
+        SwitchKnob.Position = UDim2.fromOffset(2, 2)
+        SwitchKnob.BackgroundColor3 = Color3.fromRGB(160, 150, 175)
         SwitchKnob.BorderSizePixel = 0
         SwitchKnob.Parent = SwitchTrack
 
@@ -380,20 +369,14 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         local ToggledState = false
         
         ButtonFrame.MouseButton1Click:Connect(function()  
-            TweenService:Create(ButtonFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad), {Size = UDim2.new(1, -6, 0, 42), Position = UDim2.fromOffset(3, YPos + 2)}):Play()  
-            task.wait(0.05)  
-            TweenService:Create(ButtonFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad), {Size = UDim2.new(1, 0, 0, 46), Position = UDim2.fromOffset(0, YPos)}):Play()  
-
             ToggledState = not ToggledState
             
             if ToggledState then
-                TweenService:Create(SwitchTrack, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(130, 50, 255)}):Play()
-                TweenService:Create(TrackStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {Color = Color3.fromRGB(180, 120, 255)}):Play()
-                TweenService:Create(SwitchKnob, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromOffset(23, 3), BackgroundColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+                TweenService:Create(SwitchTrack, TweenInfo.new(0.12, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(120, 40, 240)}):Play()
+                TweenService:Create(SwitchKnob, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromOffset(18, 2), BackgroundColor3 = Color3.fromRGB(255, 255, 255)}):Play()
             else
-                TweenService:Create(SwitchTrack, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(40, 32, 55)}):Play()
-                TweenService:Create(TrackStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {Color = Color3.fromRGB(75, 60, 100)}):Play()
-                TweenService:Create(SwitchKnob, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromOffset(3, 3), BackgroundColor3 = Color3.fromRGB(180, 170, 195)}):Play()
+                TweenService:Create(SwitchTrack, TweenInfo.new(0.12, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(32, 25, 45)}):Play()
+                TweenService:Create(SwitchKnob, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromOffset(2, 2), BackgroundColor3 = Color3.fromRGB(160, 150, 175)}):Play()
             end
 
             if Callback then
@@ -403,87 +386,50 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     end
 
     function Window:CreateButton(Name, Callback)
-        local YPos = Window.ElementCount * 54
+        local YPos = Window.ElementCount * 36
         Window.ElementCount = Window.ElementCount + 1
         UpdateSize()
 
         local ButtonFrame = Instance.new("TextButton")
         ButtonFrame.Name = "SimpleButton"
-        ButtonFrame.Size = UDim2.new(1, 0, 0, 46)
+        ButtonFrame.Size = UDim2.new(1, 0, 0, 30)
         ButtonFrame.Position = UDim2.fromOffset(0, YPos)
-        ButtonFrame.BackgroundColor3 = Color3.fromRGB(22, 18, 34)
+        ButtonFrame.BackgroundColor3 = Color3.fromRGB(20, 16, 30)
         ButtonFrame.BorderSizePixel = 0
         ButtonFrame.ClipsDescendants = true
         ButtonFrame.Text = ""
         ButtonFrame.Parent = Content
 
         local bCorner = Instance.new("UICorner")
-        bCorner.CornerRadius = UDim.new(0, 8)
+        bCorner.CornerRadius = UDim.new(0, 5)
         bCorner.Parent = ButtonFrame
 
         local BaseGradient = Instance.new("UIGradient")  
         BaseGradient.Color = ColorSequence.new({  
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(44, 30, 66)),  
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(22, 14, 34))  
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(38, 26, 56)),  
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 12, 28))  
         })  
         BaseGradient.Rotation = 90  
         BaseGradient.Parent = ButtonFrame  
 
         local Stroke = Instance.new("UIStroke")  
-        Stroke.Color = Color3.fromRGB(255, 255, 255)  
-        Stroke.Thickness = 1.2  
+        Stroke.Color = Color3.fromRGB(60, 45, 85)  
+        Stroke.Thickness = 1  
         Stroke.Parent = ButtonFrame  
-
-        local StrokeGradient = Instance.new("UIGradient")  
-        StrokeGradient.Color = ColorSequence.new({  
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(190, 140, 255)),  
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(70, 45, 110))  
-        })  
-        StrokeGradient.Rotation = 90  
-        StrokeGradient.Parent = Stroke  
-
-        local SheenBar = Instance.new("Frame")  
-        SheenBar.Name = "SheenBar"  
-        SheenBar.Size = UDim2.new(2, 0, 1, 0)
-        SheenBar.Position = UDim2.new(-2, 0, 0, 0)
-        SheenBar.BackgroundTransparency = 1
-        SheenBar.ZIndex = 2
-        SheenBar.Parent = ButtonFrame  
-
-        local ClickSheenGradient = Instance.new("UIGradient")  
-        ClickSheenGradient.Color = ColorSequence.new({  
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(44, 30, 66)),
-            ColorSequenceKeypoint.new(0.4, Color3.fromRGB(210, 170, 255)),
-            ColorSequenceKeypoint.new(0.6, Color3.fromRGB(210, 170, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(22, 14, 34))
-        })  
-        ClickSheenGradient.Transparency = NumberSequence.new({  
-            NumberSequenceKeypoint.new(0, 1),  
-            NumberSequenceKeypoint.new(0.4, 0.2),
-            NumberSequenceKeypoint.new(0.6, 0.2),  
-            NumberSequenceKeypoint.new(1, 1)  
-        })  
-        ClickSheenGradient.Rotation = 20  
-        ClickSheenGradient.Parent = SheenBar  
 
         local Label = Instance.new("TextLabel")  
         Label.Size = UDim2.new(1, 0, 1, 0)  
         Label.BackgroundTransparency = 1  
         Label.Text = Name  
         Label.Font = Enum.Font.GothamBlack  
-        Label.TextSize = 13  
+        Label.TextSize = 11  
         Label.TextColor3 = Color3.fromRGB(255, 255, 255) 
-        Label.ZIndex = 3  
         Label.Parent = ButtonFrame
         
         ButtonFrame.MouseButton1Click:Connect(function()
-            SheenBar.Position = UDim2.new(-2, 0, 0, 0)
-            
-            TweenService:Create(ButtonFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad), {Size = UDim2.new(1, -6, 0, 42), Position = UDim2.fromOffset(3, YPos + 2)}):Play()  
-            TweenService:Create(SheenBar, TweenInfo.new(0.4, Enum.EasingStyle.Linear), {Position = UDim2.new(1, 0, 0, 0)}):Play()
-            
-            task.wait(0.05)  
-            TweenService:Create(ButtonFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad), {Size = UDim2.new(1, 0, 0, 46), Position = UDim2.fromOffset(0, YPos)}):Play()  
+            TweenService:Create(ButtonFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad), {ImageTransparency = 0.3}):Play()
+            task.wait(0.05)
+            TweenService:Create(ButtonFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad), {ImageTransparency = 0}):Play()
             
             if Callback then
                 pcall(Callback)
