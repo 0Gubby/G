@@ -6,19 +6,28 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     local CoreGui = game:GetService("CoreGui")
     local TweenService = game:GetService("TweenService")
 
-    local Player = Players.LocalPlayer
+    local Player = Players.LocalPlayer or Players:GetPlayers()[1] or Players.PlayerAdded:Wait()
     local Minimized = false
 
+    -- Foolproof, multi-executor fallback chain
     local ParentFolder
-    if gethui then
-        ParentFolder = gethui()
-    elseif cloneref then
-        local success, core = pcall(cloneref, CoreGui)
-        ParentFolder = success and core or Player:WaitForChild("PlayerGui")
+    local successHui, hui = pcall(function() return gethui and gethui() end)
+    local successClone, coreClone = pcall(function() return cloneref and cloneref(CoreGui) end)
+    
+    if successHui and hui then
+        ParentFolder = hui
+    elseif successClone and coreClone then
+        ParentFolder = coreClone
     else
-        local success, core = pcall(function() return CoreGui:ClassName() == "CoreGui" and CoreGui end)
-        ParentFolder = success and core or Player:WaitForChild("PlayerGui")
+        local successCore, core = pcall(function() return CoreGui end)
+        if successCore and core and pcall(function() return core.Name end) then
+            ParentFolder = core
+        else
+            ParentFolder = Player:WaitForChild("PlayerGui", 10)
+        end
     end
+
+    if not ParentFolder then return nil end
 
     pcall(function()
         if ParentFolder:FindFirstChild("UniversalGui") then
@@ -29,11 +38,12 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "UniversalGui"
     ScreenGui.ResetOnSpawn = false
+    
+    -- Force bypass layout constraints on low-end executors
+    pcall(function() ScreenGui.DisplayOrder = 999999 end)
+    pcall(function() ScreenGui.IgnoreGuiInset = true end)
     ScreenGui.Parent = ParentFolder
 
-    -- =========================================================================
-    -- MAIN WINDOW (SHINY NEON PURPLE APPAREL)
-    -- =========================================================================
     local Main = Instance.new("Frame")
     Main.Name = "Main"
     Main.Size = UDim2.new(0.85, 0, 0, 95)
@@ -51,7 +61,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     MainCorner.CornerRadius = UDim.new(0, 14)
     MainCorner.Parent = Main
 
-    -- Metallic/Glassy background gradient
     local MainBgGradient = Instance.new("UIGradient")
     MainBgGradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 20, 55)),
@@ -61,7 +70,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     MainBgGradient.Rotation = 135
     MainBgGradient.Parent = Main
 
-    -- Animated Neon Glow Border
     local MainStroke = Instance.new("UIStroke")
     MainStroke.Thickness = 1.5
     MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -75,9 +83,8 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     })
     StrokeGradient.Parent = MainStroke
 
-    -- Spin the stroke gradient for a "shiny/moving" border effect
     task.spawn(function()
-        while Main and Main.Parent do
+        while Main and Main.Parent and ScreenGui and ScreenGui.Parent do
             for i = 0, 360, 2 do
                 if not StrokeGradient or not StrokeGradient.Parent then break end
                 StrokeGradient.Rotation = i
@@ -86,7 +93,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         end
     end)
 
-    -- Header Drag Area
     local HeaderHitbox = Instance.new("TextButton")
     HeaderHitbox.Name = "HeaderHitbox"
     HeaderHitbox.Size = UDim2.new(1, 0, 0, 45)
@@ -105,8 +111,7 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.Parent = Main
 
-    -- Add text shine to Title
-    local TitleGlow = Instance.new"UIStroke"
+    local TitleGlow = Instance.new("UIStroke")
     TitleGlow.Color = Color3.fromRGB(180, 100, 255)
     TitleGlow.Thickness = 0.5
     TitleGlow.Parent = Title
@@ -122,7 +127,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     Subtitle.TextXAlignment = Enum.TextXAlignment.Left
     Subtitle.Parent = Main
 
-    -- Controls Container
     local Controls = Instance.new("Frame")
     Controls.Name = "Controls"
     Controls.Size = UDim2.fromOffset(60, 24)
@@ -137,7 +141,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     ControlsLayout.Padding = UDim.new(0, 8)
     ControlsLayout.Parent = Controls
 
-    -- Minimize Button
     local Minimize = Instance.new("TextButton")
     Minimize.Name = "Minimize"
     Minimize.Size = UDim2.fromOffset(24, 24)
@@ -159,7 +162,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     MinStroke.Thickness = 1
     MinStroke.Parent = Minimize
 
-    -- Close Button
     local Close = Instance.new("TextButton")
     Close.Name = "Close"
     Close.Size = UDim2.fromOffset(24, 24)
@@ -181,7 +183,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     CloseStroke.Thickness = 1
     CloseStroke.Parent = Close
 
-    -- Main Content Layout Frame
     local Content = Instance.new("Frame")
     Content.Size = UDim2.new(1, -32, 1, -110)
     Content.Position = UDim2.fromOffset(16, 52)
@@ -194,9 +195,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     ContentLayout.Padding = UDim.new(0, 8)
     ContentLayout.Parent = Content
 
-    -- =========================================================================
-    -- SHINY PROFILE FOOTER
-    -- =========================================================================
     local ProfileFrame = Instance.new("Frame")
     ProfileFrame.Name = "ProfileFrame"
     ProfileFrame.Size = UDim2.new(1, -32, 0, 36)
@@ -237,7 +235,7 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     DisplayNameLabel.Size = UDim2.new(1, -50, 0, 14)
     DisplayNameLabel.Position = UDim2.fromOffset(40, 4)
     DisplayNameLabel.BackgroundTransparency = 1
-    DisplayNameLabel.Text = Player.DisplayName
+    DisplayNameLabel.Text = Player.DisplayName or "Player"
     DisplayNameLabel.Font = Enum.Font.GothamBold
     DisplayNameLabel.TextSize = 10
     DisplayNameLabel.TextColor3 = Color3.fromRGB(240, 220, 255)
@@ -248,7 +246,7 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
     UsernameLabel.Size = UDim2.new(1, -50, 0, 12)
     UsernameLabel.Position = UDim2.fromOffset(40, 18)
     UsernameLabel.BackgroundTransparency = 1
-    UsernameLabel.Text = "@" .. Player.Name
+    UsernameLabel.Text = "@" .. (Player.Name or "Unknown")
     UsernameLabel.Font = Enum.Font.GothamMedium
     UsernameLabel.TextSize = 8.5
     UsernameLabel.TextColor3 = Color3.fromRGB(165, 140, 200)
@@ -274,9 +272,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         ScreenGui:Destroy()
     end)
 
-    -- =========================================================================
-    -- SMOOTH DRAGGING
-    -- =========================================================================
     local dragging, dragInput, dragStart, startPos
 
     local function update(input)
@@ -310,16 +305,12 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         end
     end)
 
-    -- =========================================================================
-    -- WINDOW RESIZING MECHANICS
-    -- =========================================================================
     local Window = {
         ElementCount = 0,
         MaxHeight = 105
     }
 
     local function UpdateSize()
-        -- Dynamic list scaling using UIListLayout padding
         local totalElementsHeight = Window.ElementCount * 34 
         local totalPaddingHeight = math.max(0, Window.ElementCount - 1) * 8
         Window.MaxHeight = 105 + totalElementsHeight + totalPaddingHeight
@@ -344,9 +335,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         end
     end)
 
-    -- =========================================================================
-    -- ELEMENTS CREATION (TOGGLE / BUTTON)
-    -- =========================================================================
     function Window:CreateToggle(Name, Callback)
         Window.ElementCount = Window.ElementCount + 1
         UpdateSize()
@@ -416,10 +404,9 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         ButtonFrame.MouseButton1Click:Connect(function()  
             ToggledState = not ToggledState
             
-            -- Smooth visual pop feedback
             TweenService:Create(ButtonFrame, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(50, 30, 85)}):Play()
             task.delay(0.1, function()
-                TweenService:Create(ButtonFrame, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(30, 18, 50)}):Play()
+                if ButtonFrame then TweenService:Create(ButtonFrame, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(30, 18, 50)}):Play() end
             end)
 
             if ToggledState then
@@ -453,7 +440,6 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         bCorner.CornerRadius = UDim.new(0, 8)
         bCorner.Parent = ButtonFrame
 
-        -- Bright vibrant linear reflection style gradient
         local BaseGradient = Instance.new("UIGradient")  
         BaseGradient.Color = ColorSequence.new({  
             ColorSequenceKeypoint.new(0, Color3.fromRGB(140, 40, 230)),  
@@ -478,11 +464,10 @@ function Library:CreateWindow(HubTitle, HubSubtitle)
         Label.Parent = ButtonFrame
         
         ButtonFrame.MouseButton1Click:Connect(function()
-            -- Elegant flash click response
             local clickTween = TweenService:Create(BaseGradient, TweenInfo.new(0.08, Enum.EasingStyle.Quad), {Rotation = 270})
             clickTween:Play()
             clickTween.Completed:Wait()
-            TweenService:Create(BaseGradient, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {Rotation = 90}):Play()
+            if BaseGradient then TweenService:Create(BaseGradient, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {Rotation = 90}):Play() end
             
             if Callback then
                 pcall(Callback)
