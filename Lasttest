@@ -1,0 +1,474 @@
+local LocalLibrary = {}
+
+function LocalLibrary:CreateWindow(HubTitle, HubSubtitle, BackgroundImageId)
+    local Players = game:GetService("Players")
+    local UIS = game:GetService("UserInputService")
+    local CoreGui = game:GetService("CoreGui")
+    local TweenService = game:GetService("TweenService")
+    local Debris = game:GetService("Debris")
+
+    local Player = Players.LocalPlayer or Players:GetPlayers()[1] or Players.PlayerAdded:Wait()
+    local Minimized = false
+
+    -- Universal Click Sound
+    local function PlayClick()
+        local sound = Instance.new("Sound")
+        sound.SoundId = "rbxassetid://6895086153" -- Clean UI click sound
+        sound.Volume = 0.5
+        sound.Parent = CoreGui
+        sound:Play()
+        Debris:AddItem(sound, 1)
+    end
+
+    -- Multi-executor fallback chain
+    local ParentFolder
+    local successHui, hui = pcall(function() return gethui and gethui() end)
+    local successClone, coreClone = pcall(function() return cloneref and cloneref(CoreGui) end)
+    
+    if successHui and hui then
+        ParentFolder = hui
+    elseif successClone and coreClone then
+        ParentFolder = coreClone
+    else
+        local successCore, core = pcall(function() return CoreGui end)
+        if successCore and core and pcall(function() return core.Name end) then
+            ParentFolder = core
+        else
+            ParentFolder = Player:WaitForChild("PlayerGui", 10)
+        end
+    end
+
+    if not ParentFolder then return nil end
+
+    pcall(function()
+        if ParentFolder:FindFirstChild("UniversalGui") then
+            ParentFolder.UniversalGui:Destroy()
+        end
+    end)
+
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "UniversalGui"
+    ScreenGui.ResetOnSpawn = false
+    pcall(function() ScreenGui.DisplayOrder = 999999 end)
+    pcall(function() ScreenGui.IgnoreGuiInset = true end)
+    ScreenGui.Parent = ParentFolder
+
+    -- High-Contrast Shiny Silver Theme
+    local Theme = {
+        MainBg = Color3.fromRGB(20, 20, 22),
+        ElementBg = Color3.fromRGB(28, 28, 32),
+        TextPrimary = Color3.fromRGB(255, 255, 255),
+        TextSecondary = Color3.fromRGB(160, 165, 175),
+        ShinySilver = Color3.fromRGB(240, 245, 255),
+        DarkChrome = Color3.fromRGB(70, 75, 85)
+    }
+
+    local Main = Instance.new("Frame")
+    Main.Name = "Main"
+    -- Mobile friendly width and height
+    Main.Size = UDim2.new(0, 350, 0, 350) 
+    Main.Position = UDim2.new(0.5, 0, 0.5, 0)
+    Main.AnchorPoint = Vector2.new(0.5, 0.5)
+    Main.BackgroundColor3 = Theme.MainBg
+    Main.BorderSizePixel = 0
+    Main.ClipsDescendants = false
+    Main.Parent = ScreenGui
+
+    local MainCorner = Instance.new("UICorner")
+    MainCorner.CornerRadius = UDim.new(0, 12)
+    MainCorner.Parent = Main
+    
+    -- Custom Background Image logic
+    if BackgroundImageId and BackgroundImageId ~= "" then
+        local BgImage = Instance.new("ImageLabel")
+        BgImage.Size = UDim2.new(1, 0, 1, 0)
+        BgImage.BackgroundTransparency = 1
+        BgImage.Image = BackgroundImageId
+        BgImage.ImageTransparency = 0.85 -- Subtle background
+        BgImage.ScaleType = Enum.ScaleType.Crop
+        BgImage.Parent = Main
+        Instance.new("UICorner", BgImage).CornerRadius = UDim.new(0, 12)
+    end
+
+    local MainStroke = Instance.new("UIStroke")
+    MainStroke.Thickness = 2
+    MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    MainStroke.Parent = Main
+
+    -- Animated Ultra-Shiny Chrome Border
+    local StrokeGradient = Instance.new("UIGradient")
+    StrokeGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+        ColorSequenceKeypoint.new(0.2, Color3.fromRGB(90, 90, 100)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+        ColorSequenceKeypoint.new(0.8, Color3.fromRGB(120, 125, 135)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+    })
+    StrokeGradient.Parent = MainStroke
+
+    task.spawn(function()
+        while Main and Main.Parent and ScreenGui and ScreenGui.Parent do
+            for i = 0, 360, 2 do
+                if not StrokeGradient or not StrokeGradient.Parent then break end
+                StrokeGradient.Rotation = i
+                task.wait(0.02)
+            end
+        end
+    end)
+
+    -- Mobile friendly header size
+    local HeaderHitbox = Instance.new("TextButton")
+    HeaderHitbox.Size = UDim2.new(1, 0, 0, 50)
+    HeaderHitbox.BackgroundTransparency = 1
+    HeaderHitbox.Text = ""
+    HeaderHitbox.Parent = Main
+
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, -95, 0, 18)
+    Title.Position = UDim2.fromOffset(16, 12)
+    Title.BackgroundTransparency = 1
+    Title.Text = HubTitle or "CHROME UNIVERSAL"
+    Title.Font = Enum.Font.GothamBold
+    Title.TextSize = 14
+    Title.TextColor3 = Theme.TextPrimary
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.Parent = Main
+
+    local Subtitle = Instance.new("TextLabel")
+    Subtitle.Size = UDim2.new(1, -95, 0, 12)
+    Subtitle.Position = UDim2.fromOffset(16, 30)
+    Subtitle.BackgroundTransparency = 1
+    Subtitle.Text = HubSubtitle or "Silver Metallic Edition"
+    Subtitle.Font = Enum.Font.GothamMedium
+    Subtitle.TextSize = 11
+    Subtitle.TextColor3 = Theme.TextSecondary
+    Subtitle.TextXAlignment = Enum.TextXAlignment.Left
+    Subtitle.Parent = Main
+
+    local Controls = Instance.new("Frame")
+    Controls.Size = UDim2.fromOffset(70, 30)
+    Controls.Position = UDim2.new(1, -80, 0, 12)
+    Controls.BackgroundTransparency = 1
+    Controls.Parent = Main
+
+    local ControlsLayout = Instance.new("UIListLayout")
+    ControlsLayout.FillDirection = Enum.FillDirection.Horizontal
+    ControlsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    ControlsLayout.Padding = UDim.new(0, 10)
+    ControlsLayout.Parent = Controls
+
+    local Minimize = Instance.new("TextButton")
+    Minimize.Size = UDim2.fromOffset(30, 30)
+    Minimize.BackgroundColor3 = Theme.ElementBg
+    Minimize.Text = "−"
+    Minimize.TextColor3 = Theme.ShinySilver
+    Minimize.Font = Enum.Font.GothamBold
+    Minimize.TextSize = 18
+    Minimize.BorderSizePixel = 0
+    Minimize.LayoutOrder = 1
+    Minimize.Parent = Controls
+    Instance.new("UICorner", Minimize).CornerRadius = UDim.new(0, 6)
+    local minStr = Instance.new("UIStroke", Minimize)
+    minStr.Color = Theme.DarkChrome
+    minStr.Thickness = 1
+
+    local Close = Instance.new("TextButton")
+    Close.Size = UDim2.fromOffset(30, 30)
+    Close.BackgroundColor3 = Color3.fromRGB(45, 20, 25)
+    Close.Text = "✕"
+    Close.TextColor3 = Color3.fromRGB(255, 120, 130)
+    Close.Font = Enum.Font.GothamBold
+    Close.TextSize = 14
+    Close.BorderSizePixel = 0
+    Close.LayoutOrder = 2
+    Close.Parent = Controls
+    Instance.new("UICorner", Close).CornerRadius = UDim.new(0, 6)
+    local clsStr = Instance.new("UIStroke", Close)
+    clsStr.Color = Color3.fromRGB(160, 60, 70)
+    clsStr.Thickness = 1
+
+    Close.MouseButton1Click:Connect(function() 
+        PlayClick()
+        ScreenGui:Destroy() 
+    end)
+
+    -- TAB CONTAINER (Touch friendly scrolling)
+    local TabContainer = Instance.new("ScrollingFrame")
+    TabContainer.Size = UDim2.new(1, -32, 0, 35)
+    TabContainer.Position = UDim2.fromOffset(16, 60)
+    TabContainer.BackgroundTransparency = 1
+    TabContainer.ScrollBarThickness = 0
+    TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+    TabContainer.AutomaticCanvasSize = Enum.AutomaticSize.X
+    TabContainer.Parent = Main
+
+    local TabLayout = Instance.new("UIListLayout")
+    TabLayout.FillDirection = Enum.FillDirection.Horizontal
+    TabLayout.Padding = UDim.new(0, 8)
+    TabLayout.Parent = TabContainer
+
+    -- CONTENT HOLDER
+    local ContentHolder = Instance.new("Frame")
+    ContentHolder.Size = UDim2.new(1, -32, 1, -165)
+    ContentHolder.Position = UDim2.fromOffset(16, 105)
+    ContentHolder.BackgroundTransparency = 1
+    ContentHolder.ClipsDescendants = true
+    ContentHolder.Parent = Main
+
+    -- PROFILE & INFO SECTION
+    local ProfileFrame = Instance.new("Frame")
+    ProfileFrame.Size = UDim2.new(1, -32, 0, 40)
+    ProfileFrame.Position = UDim2.new(0, 16, 1, -50)
+    ProfileFrame.BackgroundColor3 = Theme.ElementBg
+    ProfileFrame.BorderSizePixel = 0
+    ProfileFrame.Parent = Main
+    Instance.new("UICorner", ProfileFrame).CornerRadius = UDim.new(0, 8)
+    local profStr = Instance.new("UIStroke", ProfileFrame)
+    profStr.Color = Theme.DarkChrome
+    profStr.Thickness = 1
+
+    local AvatarImage = Instance.new("ImageLabel")
+    AvatarImage.Size = UDim2.fromOffset(28, 28)
+    AvatarImage.Position = UDim2.new(0, 8, 0.5, -14)
+    AvatarImage.BackgroundColor3 = Theme.MainBg
+    AvatarImage.BorderSizePixel = 0
+    AvatarImage.Parent = ProfileFrame
+    Instance.new("UICorner", AvatarImage).CornerRadius = UDim.new(1, 0)
+
+    task.spawn(function()
+        local success, content = pcall(function()
+            return Players:GetUserThumbnailAsync(Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+        end)
+        if success then AvatarImage.Image = content end
+    end)
+
+    local DisplayNameLabel = Instance.new("TextLabel")
+    DisplayNameLabel.Size = UDim2.new(1, -90, 0, 14)
+    DisplayNameLabel.Position = UDim2.fromOffset(45, 6)
+    DisplayNameLabel.BackgroundTransparency = 1
+    DisplayNameLabel.Text = Player.DisplayName
+    DisplayNameLabel.Font = Enum.Font.GothamBold
+    DisplayNameLabel.TextSize = 12
+    DisplayNameLabel.TextColor3 = Theme.TextPrimary
+    DisplayNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    DisplayNameLabel.Parent = ProfileFrame
+
+    -- DRAG LOGIC
+    local dragging, dragInput, dragStart, startPos
+    HeaderHitbox.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true; dragStart = input.Position; startPos = Main.Position
+            input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
+        end
+    end)
+    HeaderHitbox.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
+    UIS.InputChanged:Connect(function(input) if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end end)
+
+    local Window = { Tabs = {}, ActiveTab = nil }
+
+    Minimize.MouseButton1Click:Connect(function()
+        PlayClick()
+        Minimized = not Minimized
+        if Minimized then
+            TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 350, 0, 50)}):Play()
+            ContentHolder.Visible = false; ProfileFrame.Visible = false; TabContainer.Visible = false; Minimize.Text = "+"
+        else
+            ContentHolder.Visible = true; ProfileFrame.Visible = true; TabContainer.Visible = true; Minimize.Text = "−"
+            TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 350, 0, 350)}):Play()
+        end
+    end)
+
+    -- === TABS & ELEMENTS ===
+    function Window:CreateTab(TabName)
+        local TabButton = Instance.new("TextButton")
+        TabButton.Size = UDim2.new(0, 0, 1, 0)
+        TabButton.AutomaticSize = Enum.AutomaticSize.X
+        TabButton.BackgroundColor3 = Color3.fromRGB(30, 32, 38)
+        TabButton.Text = "  " .. TabName .. "  "
+        TabButton.Font = Enum.Font.GothamBold
+        TabButton.TextSize = 12
+        TabButton.TextColor3 = Theme.TextSecondary
+        TabButton.BorderSizePixel = 0
+        TabButton.Parent = TabContainer
+        Instance.new("UICorner", TabButton).CornerRadius = UDim.new(0, 6)
+        
+        local tabStr = Instance.new("UIStroke", TabButton)
+        tabStr.Color = Theme.DarkChrome
+        tabStr.Thickness = 1
+
+        -- Mobile Friendly: Changed to ScrollingFrame so it doesn't break mobile screens
+        local TabPage = Instance.new("ScrollingFrame")
+        TabPage.Size = UDim2.new(1, 0, 1, 0)
+        TabPage.BackgroundTransparency = 1
+        TabPage.Visible = false
+        TabPage.ScrollBarThickness = 2
+        TabPage.ScrollBarImageColor3 = Theme.ShinySilver
+        TabPage.CanvasSize = UDim2.new(0, 0, 0, 0)
+        TabPage.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        TabPage.Parent = ContentHolder
+
+        local PageLayout = Instance.new("UIListLayout")
+        PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        PageLayout.Padding = UDim.new(0, 10)
+        PageLayout.Parent = TabPage
+
+        local Tab = { Layout = PageLayout }
+
+        local function ActivateTab()
+            PlayClick()
+            for _, t in pairs(Window.Tabs) do
+                t.Page.Visible = false
+                t.Button.TextColor3 = Theme.TextSecondary
+                t.Button.BackgroundColor3 = Color3.fromRGB(30, 32, 38)
+                t.Stroke.Color = Theme.DarkChrome
+            end
+            TabPage.Visible = true
+            TabButton.TextColor3 = Theme.TextPrimary
+            TabButton.BackgroundColor3 = Color3.fromRGB(55, 60, 70)
+            tabStr.Color = Theme.ShinySilver
+            Window.ActiveTab = Tab
+        end
+
+        TabButton.MouseButton1Click:Connect(ActivateTab)
+        table.insert(Window.Tabs, {Page = TabPage, Button = TabButton, Stroke = tabStr})
+
+        if #Window.Tabs == 1 then ActivateTab() end
+
+        function Tab:CreateSection(SectionName)
+            local SectionFrame = Instance.new("Frame")
+            SectionFrame.Size = UDim2.new(1, 0, 0, 24)
+            SectionFrame.BackgroundTransparency = 1
+            SectionFrame.Parent = TabPage
+
+            local LabelText = Instance.new("TextLabel")
+            LabelText.Size = UDim2.new(1, 0, 1, 0)
+            LabelText.BackgroundTransparency = 1
+            LabelText.Text = "  " .. SectionName
+            LabelText.Font = Enum.Font.GothamBold
+            LabelText.TextSize = 12
+            LabelText.TextColor3 = Theme.ShinySilver
+            LabelText.TextXAlignment = Enum.TextXAlignment.Left
+            LabelText.Parent = SectionFrame
+        end
+
+        function Tab:CreateButton(Name, Callback)
+            local ButtonFrame = Instance.new("TextButton")
+            ButtonFrame.Size = UDim2.new(1, -4, 0, 42) -- Taller for mobile
+            ButtonFrame.BackgroundColor3 = Theme.ElementBg
+            ButtonFrame.BorderSizePixel = 0
+            ButtonFrame.ClipsDescendants = true
+            ButtonFrame.Text = ""
+            ButtonFrame.Parent = TabPage
+            Instance.new("UICorner", ButtonFrame).CornerRadius = UDim.new(0, 8)
+
+            local BaseGradient = Instance.new("UIGradient")  
+            BaseGradient.Color = ColorSequence.new({  
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 65, 75)),  
+                ColorSequenceKeypoint.new(0.5, Color3.fromRGB(35, 38, 45)),  
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 22, 26))  
+            })  
+            BaseGradient.Rotation = 90  
+            BaseGradient.Parent = ButtonFrame  
+
+            local Stroke = Instance.new("UIStroke")  
+            Stroke.Color = Theme.DarkChrome  
+            Stroke.Thickness = 1  
+            Stroke.Parent = ButtonFrame  
+
+            local Label = Instance.new("TextLabel")  
+            Label.Size = UDim2.new(1, 0, 1, 0)  
+            Label.BackgroundTransparency = 1  
+            Label.Text = Name  
+            Label.Font = Enum.Font.GothamBold  
+            Label.TextSize = 13  
+            Label.TextColor3 = Theme.TextPrimary 
+            Label.Parent = ButtonFrame
+            
+            ButtonFrame.MouseButton1Click:Connect(function()
+                PlayClick()
+                TweenService:Create(Stroke, TweenInfo.new(0.1), {Color = Theme.ShinySilver}):Play()
+                task.delay(0.15, function() TweenService:Create(Stroke, TweenInfo.new(0.2), {Color = Theme.DarkChrome}):Play() end)
+                if Callback then pcall(Callback) end
+            end)
+        end
+
+        function Tab:CreateToggle(Name, Default, Callback)
+            local Toggled = Default or false
+
+            local ToggleButton = Instance.new("TextButton")
+            ToggleButton.Size = UDim2.new(1, -4, 0, 42)
+            ToggleButton.BackgroundColor3 = Theme.ElementBg
+            ToggleButton.BorderSizePixel = 0
+            ToggleButton.Text = ""
+            ToggleButton.Parent = TabPage
+            Instance.new("UICorner", ToggleButton).CornerRadius = UDim.new(0, 8)
+            
+            local ToggleStroke = Instance.new("UIStroke")
+            ToggleStroke.Color = Theme.DarkChrome
+            ToggleStroke.Thickness = 1
+            ToggleStroke.Parent = ToggleButton
+
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(1, -60, 1, 0)
+            Label.Position = UDim2.new(0, 12, 0, 0)
+            Label.BackgroundTransparency = 1
+            Label.Text = Name
+            Label.Font = Enum.Font.GothamBold
+            Label.TextSize = 13
+            Label.TextColor3 = Theme.TextPrimary
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.Parent = ToggleButton
+
+            local CheckOuter = Instance.new("Frame")
+            CheckOuter.Size = UDim2.new(0, 24, 0, 24)
+            CheckOuter.Position = UDim2.new(1, -36, 0.5, -12)
+            CheckOuter.BackgroundColor3 = Color3.fromRGB(20, 22, 26)
+            CheckOuter.Parent = ToggleButton
+            Instance.new("UICorner", CheckOuter).CornerRadius = UDim.new(0, 6)
+            
+            local CheckStroke = Instance.new("UIStroke")
+            CheckStroke.Color = Theme.DarkChrome
+            CheckStroke.Thickness = 1
+            CheckStroke.Parent = CheckOuter
+
+            local CheckInner = Instance.new("Frame")
+            CheckInner.Size = UDim2.new(1, -8, 1, -8)
+            CheckInner.Position = UDim2.new(0.5, 0, 0.5, 0)
+            CheckInner.AnchorPoint = Vector2.new(0.5, 0.5)
+            CheckInner.BackgroundColor3 = Theme.ShinySilver
+            CheckInner.BackgroundTransparency = Toggled and 0 or 1
+            CheckInner.Parent = CheckOuter
+            Instance.new("UICorner", CheckInner).CornerRadius = UDim.new(0, 4)
+
+            ToggleButton.MouseButton1Click:Connect(function()
+                PlayClick()
+                Toggled = not Toggled
+                
+                -- Toggle Animation
+                if Toggled then
+                    TweenService:Create(CheckInner, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {BackgroundTransparency = 0, Size = UDim2.new(1, -8, 1, -8)}):Play()
+                    TweenService:Create(CheckStroke, TweenInfo.new(0.2), {Color = Theme.ShinySilver}):Play()
+                else
+                    TweenService:Create(CheckInner, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1, Size = UDim2.new(0, 0, 0, 0)}):Play()
+                    TweenService:Create(CheckStroke, TweenInfo.new(0.2), {Color = Theme.DarkChrome}):Play()
+                end
+
+                if Callback then pcall(Callback, Toggled) end
+            end)
+            
+            -- Set Initial State properly if spawned as true
+            if Toggled then
+                CheckStroke.Color = Theme.ShinySilver
+                if Callback then pcall(Callback, Toggled) end
+            end
+        end
+
+        return Tab
+    end
+    return Window
+end
+
+return LocalLibrary
