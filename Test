@@ -241,7 +241,7 @@ local TopTitle = Instance.new("TextLabel")
 TopTitle.Size = UDim2.new(1, -130, 1, 0)
 TopTitle.Position = UDim2.new(0, 10, 0, 0)
 TopTitle.BackgroundTransparency = 1
-TopTitle.Text = "Gubby Team Hub"
+TopTitle.Text = "Gubby Team Hub v2"
 TopTitle.TextSize = 16
 TopTitle.Font = Enum.Font.Arcade
 TopTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -412,7 +412,7 @@ local UpdatePlaceholderLabel = Instance.new("TextLabel")
 UpdatePlaceholderLabel.Size = UDim2.new(1, -20, 1, -40)
 UpdatePlaceholderLabel.Position = UDim2.new(0, 10, 0, 35)
 UpdatePlaceholderLabel.BackgroundTransparency = 1
-UpdatePlaceholderLabel.Text = "• Placeholder: No updates logged yet."
+UpdatePlaceholderLabel.Text = "• UPDATE 1: DISBALED LOGGER, ADD +5 NEW SCRIPT, IMPOROVE GUI AND MUCH MORE."
 UpdatePlaceholderLabel.TextSize = 12
 UpdatePlaceholderLabel.Font = Enum.Font.Arcade
 UpdatePlaceholderLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -897,9 +897,9 @@ local function AddScriptButton(name, url, layoutOrder)
 end
 
 local order = 1
-AddSectionHeader("UGC GAMES", order) order = order + 1
+AddSectionHeader("UGC SCRIPTS", order) order = order + 1
 
-AddScriptButton("Script Placeholder 1", "https://example.com/raw/placeholder1", order) order = order + 1
+AddScriptButton("🍌AVL: The Show 2", "https://pastefy.app/veON2ePW/raw", order) order = order + 1
 AddScriptButton("Script Placeholder 2", "https://example.com/raw/placeholder2", order) order = order + 1
 AddScriptButton("Script Placeholder 3", "https://example.com/raw/placeholder3", order) order = order + 1
 
