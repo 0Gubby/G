@@ -419,11 +419,21 @@ UpdateScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 UpdateScroll.ZIndex = 16
 UpdateScroll.Parent = UpdateModal
 
+local UpdateScroll = Instance.new("ScrollingFrame")
+UpdateScroll.Size = UDim2.new(1, -16, 1, -40)
+UpdateScroll.Position = UDim2.new(0, 8, 0, 34)
+UpdateScroll.BackgroundTransparency = 1
+UpdateScroll.BorderSizePixel = 0
+UpdateScroll.ScrollBarThickness = 3
+UpdateScroll.ScrollBarImageColor3 = Color3.fromRGB(160, 80, 255)
+UpdateScroll.CanvasSize = UDim2.new(0, 0, 0, 200)
+UpdateScroll.ZIndex = 16
+UpdateScroll.Parent = UpdateModal
+
 local UpdateTextLabel = Instance.new("TextLabel")
-UpdateTextLabel.Size = UDim2.new(1, -5, 0, 0)
+UpdateTextLabel.Size = UDim2.new(1, -5, 1, 0)
 UpdateTextLabel.BackgroundTransparency = 1
--- Put your long update text here! Use \n for new lines.
-UpdateTextLabel.Text = "UPDATE 1:\n• DISABLED LOGGER\n• ADDED NEW SCRIPT\n• GUI IMPROVE"
+UpdateTextLabel.Text = "UPDATE 1:\n• Disbaled logger\n• Add new script\n• Improve gui"
 UpdateTextLabel.TextSize = 12
 UpdateTextLabel.Font = Enum.Font.Arcade
 UpdateTextLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -433,11 +443,6 @@ UpdateTextLabel.ZIndex = 16
 UpdateTextLabel.Parent = UpdateScroll
 MakeShinyPurpleText(UpdateTextLabel)
 
--- Auto-adjust text height and canvas size based on content length
-UpdateTextLabel:GetPropertyChangedSignal("TextBounds"):Connect(function()
-    UpdateTextLabel.Size = UDim2.new(1, -5, 0, UpdateTextLabel.TextBounds.Y)
-    UpdateScroll.CanvasSize = UDim2.new(0, 0, 0, UpdateTextLabel.TextBounds.Y + 10)
-end)
 -- Initial trigger for text size
 UpdateTextLabel.Size = UDim2.new(1, -5, 0, UpdateTextLabel.TextBounds.Y)
 UpdateScroll.CanvasSize = UDim2.new(0, 0, 0, UpdateTextLabel.TextBounds.Y + 10)
