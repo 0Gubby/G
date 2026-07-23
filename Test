@@ -412,7 +412,10 @@ local UpdatePlaceholderLabel = Instance.new("TextLabel")
 UpdatePlaceholderLabel.Size = UDim2.new(1, -20, 1, -40)
 UpdatePlaceholderLabel.Position = UDim2.new(0, 10, 0, 35)
 UpdatePlaceholderLabel.BackgroundTransparency = 1
-UpdatePlaceholderLabel.Text = "• UPDATE 1: DISBALED LOGGER, ADD +5 NEW SCRIPT, IMPOROVE GUI AND MUCH MORE."
+UpdatePlaceholderLabel.Text = "UPDATE 1: 
+• DISBALED LOGGER,
+• ADD +5 NEW SCRIPT
+• IMPOROVE GUI AND MUCH MORE."
 UpdatePlaceholderLabel.TextSize = 12
 UpdatePlaceholderLabel.Font = Enum.Font.Arcade
 UpdatePlaceholderLabel.TextXAlignment = Enum.TextXAlignment.Left
