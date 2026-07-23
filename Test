@@ -926,9 +926,12 @@ end
 local order = 1
 AddSectionHeader("UGC SCRIPTS", order) order = order + 1
 
-AddScriptButton("🍌AVL: The Show 2", "https://pastefy.app/veON2ePW/raw", order) order = order + 1
-AddScriptButton("Script Placeholder 2", "https://example.com/raw/placeholder2", order) order = order + 1
-AddScriptButton("Script Placeholder 3", "https://example.com/raw/placeholder3", order) order = order + 1
+AddScriptButton("AVL: The Show 2", "https://pastefy.app/veON2ePW/raw", order) order = order + 1
+AddScriptButton("Slimes Battles (FREE UGC)", "https://pastefy.app/gpt20BQb/raw", order) order = order + 1
+AddScriptButton("Script Placeholder", "https://example.com/raw/placeholder", order) order = order + 1
+AddScriptButton("Script Placeholder", "https://example.com/raw/placeholder", order) order = order + 1
+AddScriptButton("Script Placeholder", "https://example.com/raw/placeholder", order) order = order + 1
+AddScriptButton("Script Placeholder", "https://example.com/raw/placeholder", order) order = order + 1
 
 AddSectionHeader("OTHER", order) order = order + 1
 AddScriptButton("Whyborn", "https://pastefy.app/lND8cWtT/raw", order) order = order + 1
