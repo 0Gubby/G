@@ -924,6 +924,9 @@ local function AddScriptButton(name, url, layoutOrder)
 end
 
 local order = 1
+AddSectionHeader("INSTANT UGC", order) order = order + 1
+AddScriptButton("Tower  of misery", "https://pastebin.com/raw/nFuqw4aA", order) order = order + 1
+
 AddSectionHeader("UGC SCRIPTS", order) order = order + 1
 
 AddScriptButton("AVL: The Show 2", "https://pastefy.app/veON2ePW/raw", order) order = order + 1
