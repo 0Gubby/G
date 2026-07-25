@@ -930,7 +930,7 @@ AddScriptButton("AVL: The Show 2", "https://pastefy.app/veON2ePW/raw", order) or
 AddScriptButton("AFK For UGC 🎃", "https://pastefy.app/GTTskdF2/raw", order) order = order + 1
 AddScriptButton("Get Your Avatar! ✨", "https://pastefy.app/IUL0xlQK/raw", order) order = order + 1
 AddScriptButton("MUSINSA STREET", "https://pastefy.app/ds52eqgt/raw", order) order = order + 1
-AddScriptButton("coming soon", "https://example.com/raw/placeholder", order) order = order + 1
+AddScriptButton("Earn UGC Obby (AFK or play)", "https://pastefy.app/SU7cvcP3/raw", order) order = order + 1
 AddScriptButton("coming soon", "https://example.com/raw/placeholder", order) order = order + 1
 
 AddSectionHeader("OTHER", order) order = order + 1
