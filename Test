@@ -433,7 +433,7 @@ UpdateScroll.Parent = UpdateModal
 local UpdateTextLabel = Instance.new("TextLabel")
 UpdateTextLabel.Size = UDim2.new(1, -5, 1, 0)
 UpdateTextLabel.BackgroundTransparency = 1
-UpdateTextLabel.Text = "UPDATE 1:\n• Disbaled logger\n• Add new script\n• Improve gui"
+UpdateTextLabel.Text = "UPDATE 2:\n• ADD 3 NEW SCRIPT\n• UPDATE MUSINSA STREET SCRIPT\n• ADD 3 NEW CATEGORY"
 UpdateTextLabel.TextSize = 12
 UpdateTextLabel.Font = Enum.Font.Arcade
 UpdateTextLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -939,6 +939,7 @@ AddScriptButton("coming soon", "https://example.com/raw/placeholder", order) ord
 
 AddSectionHeader("OTHER", order) order = order + 1
 AddScriptButton("Whyborn", "https://pastefy.app/lND8cWtT/raw", order) order = order + 1
+AddScriptButton("INF YEILD", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", order) order = order + 1
 
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     local query = string.lower(SearchBox.Text)
