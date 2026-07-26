@@ -935,7 +935,7 @@ AddSectionHeader("GRINDY UGC", order) order = order + 1
 AddScriptButton("AVL: The Show 2", "https://pastefy.app/veON2ePW/raw", order) order = order + 1
 AddScriptButton("Get Your Avatar! ✨", "https://pastefy.app/IUL0xlQK/raw", order) order = order + 1
 AddScriptButton("Earn UGC Obby (AFK or play)", "https://pastefy.app/SU7cvcP3/raw", order) order = order + 1
-AddScriptButton("coming soon", "https://example.com/raw/placeholder", order) order = order + 1
+AddScriptButton("Nuttys Wizards 🧙", "https://pastefy.app/9yT1KgSZ/raw", order) order = order + 1
 
 AddSectionHeader("OTHER", order) order = order + 1
 AddScriptButton("Whyborn", "https://pastefy.app/lND8cWtT/raw", order) order = order + 1
